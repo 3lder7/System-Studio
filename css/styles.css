@@ -46,6 +46,20 @@ main {
 .post time {
     color: #888;
 }
+.post-button {
+    position: fixed;
+    bottom: 20px;
+    right: 80px;
+    background-color: #4267B2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 footer {
     text-align: center;
     padding: 1rem;
