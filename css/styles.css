@@ -1,0 +1,63 @@
+:root {
+    --primary-color: #3498db; /* Cor primária */
+    --secondary-color: #48545Bff; /* Cor secundária */
+    --text-color: #ffff; /* Cor do texto */
+    --background-color: #0E1113 ; /* Cor do fundo */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color) ;
+    color: var(--text-color);
+}
+
+header {
+    background-color: var(--background-color);
+    color:  var(--text-color);
+    padding: 1rem 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color:  var(--text-color);
+    text-decoration: none;
+}
+
+main {
+    padding: 1rem;
+}
+
+article {
+    background: var(--secondary-color);
+    color: var(--text-color);
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+footer {
+    background: var(--background-color);
+    color:  var(--text-color);
+    text-align: center;
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
