@@ -1,6 +1,12 @@
+:root {
+    --primary-color: #4267B2;
+    --secondary-color: #f4f4f4;
+    --text-color: #888;
+  }
+  
 html, body {
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    background-color: var(--secondary-color);
     margin: 0;
     padding: 0;
     height: 100%;
@@ -8,7 +14,7 @@ html, body {
     flex-direction: column;
 }
 header {
-    background-color: #4267B2;
+    background-color: var(--primary-color);
     color: white;
     padding: 1rem;
     text-align: center;
@@ -16,14 +22,14 @@ header {
 nav {
     display: flex;
     justify-content: center;
-    background-color: #fff;
+    background-color: var(--secondary-color);
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 nav a {
     margin: 0 1rem;
     text-decoration: none;
-    color: #4267B2;
+    color: var(--primary-color);
 }
 main {
     flex-grow: 1;
@@ -48,10 +54,10 @@ main {
     margin: 0 0 1rem 0;
 }
 .post time {
-    color: #888;
+    color: var(--text-color);
 }
 .comment-button {
-    background-color: #4267B2;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -67,7 +73,7 @@ main {
     position: fixed;
     bottom: 20px;
     right: 80px;
-    background-color: #4267B2;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 50%;
@@ -80,6 +86,6 @@ main {
 footer {
     text-align: center;
     padding: 1rem;
-    background-color: #fff;
+    background-color: var(--secondary-color);
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
