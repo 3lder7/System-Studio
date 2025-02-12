@@ -50,6 +50,19 @@ main {
 .post time {
     color: #888;
 }
+.comment-button {
+    background-color: #4267B2;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+}
+.comment-button:hover {
+    background-color: #365899;
+}
 .post-button {
     position: fixed;
     bottom: 20px;
