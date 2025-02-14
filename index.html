@@ -18,27 +18,27 @@
     </nav>
     <main>
         <div class="content">
+            <!--POST 1 PARA TESTES-->
             <div class="post">
                 <h2>Título do Post 1</h2>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non urna vitae neque cursus tincidunt.</p>
                 <time datetime="2025-02-11">11 de fevereiro de 2025</time>
+
                 <div class="post-footer">
-                    <button class="comment-button">Comentar</button>
-                </div>
-            </div>
-            <div class="post">
-                <h2>Título do Post 2</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non urna vitae neque cursus tincidunt.</p>
-                <time datetime="2025-02-10">10 de fevereiro de 2025</time>
-                <div class="post-footer">
-                    <button class="comment-button">Comentar</button>
+                    <button class="comment-button" onclick="abrirFormComentario(this)">Comentar</button>
+                </div><!--this para referenciar o button no js-->
+
+                <div class="comment-form" style="display: none;"><!--display: none; para não aparecer na tela (somente depois de clicar no button)-->
+                    <textarea placeholder="Digite seu comentário..."></textarea>
+                    <button class="submit-comment">Enviar</button><!--Trabalhar com botão de enviar para o banco futuramente-->
                 </div>
             </div>
         </div>
         <button class="post-button">+</button>
     </main>
     <footer>
-        <p>&copy; 2025 Rede Social</p>
+       <i><p>&copy;2025 Rede Social por Elder Galvão</p><i>
     </footer>
 </body>
+<script src="js/scripts.js"></script>
 </html>
