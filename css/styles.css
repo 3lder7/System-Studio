@@ -1,12 +1,13 @@
 :root {
     --primary-color: #4267B2;
-    --secondary-color: #f4f4f4;
+    --secondary-color: #365899;
+    --white-color: #f4f4f4;
     --text-color: #888;
   }
   
 html, body {
     font-family: Arial, sans-serif;
-    background-color: var(--secondary-color);
+    background-color: var(--white-color);
     margin: 0;
     padding: 0;
     height: 100%;
@@ -15,14 +16,14 @@ html, body {
 }
 header {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--white-color);
     padding: 1rem;
     text-align: center;
 }
 nav {
     display: flex;
     justify-content: center;
-    background-color: var(--secondary-color);
+    background-color: var(--white-color);
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -41,7 +42,7 @@ main {
     width: 600px;
 }
 .post {
-    background-color: white;
+    background-color: var(--white-color);
     padding: 1rem;
     margin-bottom: 1rem;
     border-radius: 5px;
@@ -69,10 +70,10 @@ main {
 .comment-button:hover {
     background-color: #365899;
 }
+
 .comment-form {
     margin-top: 1rem;
 }
-
 .comment-form textarea {
     width: 100%;
     padding: 0.5rem;
@@ -83,7 +84,7 @@ main {
 
 .submit-comment {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--white-color);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 5px;
@@ -91,14 +92,14 @@ main {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .submit-comment:hover {
-    background-color: #365899;
+    background-color: var(--secondary-color);
 }
 .post-button {
     position: fixed;
     bottom: 20px;
     right: 80px;
     background-color: var(--primary-color);
-    color: white;
+    color: var(--white-color);
     border: none;
     border-radius: 50%;
     width: 50px;
@@ -110,6 +111,6 @@ main {
 footer {
     text-align: center;
     padding: 1rem;
-    background-color: var(--secondary-color);
+    background-color: var(--white-color);
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
