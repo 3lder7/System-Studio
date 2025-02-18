@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede Social</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Rede Social</h1>
+    </header>
+    <nav>
+        <a href="#">Início</a>
+        <a href="#">Perfil</a>
+        <a href="#">Mensagens</a>
+        <a href="#">Configurações</a>
+    </nav>
+    <main>
+        <div class="content">
+            <!--POST 1 PARA TESTES-->
+            <div class="post">
+                <h2>Título do Post 1</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non urna vitae neque cursus tincidunt.</p>
+                <time datetime="2025-02-11">11 de fevereiro de 2025</time>
+
+                <div class="post-footer">
+                    <button class="comment-button" onclick="abrirFormComentario(this)">Comentar</button>
+                </div><!--this para referenciar o button no js-->
+
+                <div class="comment-form" style="display: none;"><!--display: none; para não aparecer na tela (somente depois de clicar no button)-->
+                    <textarea style="resize: none;" placeholder="Digite seu comentário..."></textarea>
+                    <button class="submit-comment" onclick="enviarComentario(this)">Enviar</button>
+            </div>
+        </div>
+        <button class="post-button">+</button>
+    </main>
+    <footer>
+       <i><p>&copy;2025 Rede Social por Elder Galvão</p><i>
+    </footer>
+</body>
+<script src="js/scripts.js"></script>
+</html>

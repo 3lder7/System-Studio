@@ -74,6 +74,13 @@ main {
     background-color: var(--secondary-color);
 }
 
+.form-container a {
+    color: var(--primary-color);
+    text-align: center;
+    display: block;
+    margin-top: 1rem;
+}
+
 footer {
     text-align: center;
     padding: 1rem;
