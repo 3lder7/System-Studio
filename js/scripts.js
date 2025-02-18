@@ -8,21 +8,5 @@ function abrirFormComentario(button){//trabalhando com parentElement e nextEleme
 }
 
 function enviarComentario(button) {
-    const comentarioForm = button.parentElement;
-    const textarea = comentarioForm.querySelector('textarea');
-    const comentarioTexto = textarea.value.trim();
-
-    if (comentarioTexto !== '') {
-        const comentarioDiv = document.createElement('div');
-        comentarioDiv.classList.add('comentario');
-        comentarioDiv.textContent = comentarioTexto;
-
-        const post = comentarioForm.parentElement;
-        post.insertBefore(comentarioDiv, comentarioForm);
-
-        textarea.value = '';
-        comentarioForm.style.display = 'none';
-    } else {
-        alert('Por favor, digite um comentário.');
-    }
+    const comentarioForm = button.parentElement;//criação variável pra pegar o elemento pai do botão clicado
 }//função para enviar o comentário digitado no formulário para a div de comentários
