@@ -1,0 +1,13 @@
+@import url('../variables.css');
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: var(--white-color);
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+nav a {
+    margin: 0 1rem;
+    text-decoration: none;
+    color: var(--primary-color);
+}
