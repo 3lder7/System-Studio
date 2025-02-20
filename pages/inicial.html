@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Social</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/inicial.css">
 </head>
 <body>
     <header>
@@ -31,13 +31,23 @@
                 <div class="comment-form" style="display: none;"><!--display: none; para não aparecer na tela (somente depois de clicar no button)-->
                     <textarea style="resize: none;" placeholder="Digite seu comentário..."></textarea>
                     <button class="submit-comment" onclick="enviarComentario(this)">Enviar</button>
+                </div>
             </div>
         </div>
-        <button class="post-button">+</button>
+        <button class="post-button" onclick="abrirModal()">+</button>
+        <!--JANELA MODAL-->
+        <div id="modalPost" class="modal">
+            <div class="modal-content">
+                <span class="fechar" onclick="fecharModal()">&times;</span>
+                <h2>Criar Novo Post</h2>
+                <textarea id="novoPost-content" placeholder="Digite o conteúdo do seu post..."></textarea>
+                <button onclick="criarPost()">Publicar</button>
+            </div>
+        </div>
     </main>
     <footer>
        <i><p>&copy;2025 Rede Social por Elder Galvão</p><i>
     </footer>
 </body>
-<script src="js/scripts.js"></script>
+<script src="../js/scripts.js"></script>
 </html>
