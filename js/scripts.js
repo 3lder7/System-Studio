@@ -8,9 +8,6 @@ function abrirFormComentario(button){//trabalhando com parentElement e nextEleme
     }//if else para mostrar e esconder o formulário de comentário ao clicar no botão
 }
 
-function enviarComentario(button) {
-    const comentarioForm = button.parentElement;//criação variável pra pegar o elemento pai do botão clicado
-}//função para enviar o comentário digitado no formulário para a div de comentários
 
 //JS DE POSTS/MODAL---------------------------------------------------
 function abrirModal() {
