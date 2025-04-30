@@ -69,9 +69,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
-
+-------------------------------------------
 Node.js:
-base para o backend (servidor) do aplicativ
+Base para o backend (servidor) do aplicativo
 
 NPM (Node Package Manager):
 será utilizado para instalar as dependências do projeto.
