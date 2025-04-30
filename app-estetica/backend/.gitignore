@@ -1,6 +1,0 @@
-# Ignorar node_modules do backend
-node_modules/
-
-# Ignorar logs e caches
-*.log
-npm-debug.log*
