@@ -1,12 +1,12 @@
 # Sistema de Estúdio💅🏼
-#-------------------------------------
-Node.js:
+
+- Node.js:
 Base para o backend (servidor) do aplicativo
 
-NPM (Node Package Manager):
+- NPM (Node Package Manager):
 será utilizado para instalar as dependências do projeto.
 
-Express (para o backend):
+- Express (para o backend):
 Express para construir o servidor.
 
 ### HomeScreen
@@ -14,7 +14,7 @@ Express para construir o servidor.
 - createStackNavigator: Cria uma pilha de navegação para alternar entre telas.
 - initialRouteName: Define a tela inicial como HomeScreen.
 
-/*# Getting Started with Create React App
+# Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
