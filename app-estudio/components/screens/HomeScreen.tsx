@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  Platform,
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  SafeAreaView, 
+  StatusBar, 
+  Platform 
 } from 'react-native';
-import { useFonts } from 'expo-font';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { Button } from 'react-native';
+
+
+type RootStackParamList = {
+  Home: undefined;
+  AddAppointment: { addAppointment: (newAppointment: any) => void };
+};
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
 
 const TelaInicial = () => {
-  // Estado para dados dinâmicos
+  const navigation = useNavigation<NavigationProp>();
   const [receitaHoje, setReceitaHoje] = useState(350);
   const [compromissosHoje, setCompromissosHoje] = useState(4);
   const [compromissos, setCompromissos] = useState([
@@ -96,7 +106,7 @@ const TelaInicial = () => {
         backgroundColor={Platform.OS === 'android' ? '#F8F9FA' : undefined}
       />
       <ScrollView style={styles.container}>
-        <Text style={styles.greeting}>Olá, Juliana!</Text>
+        <Text style={styles.greeting}>Olá, Maiane!</Text>
 
         {/* Cards de estatísticas */}
         <StatCard title="Receita de hoje" value={receitaHoje.toFixed(2)} prefix="R$ " />
@@ -121,12 +131,22 @@ const TelaInicial = () => {
       </ScrollView>
 
       {/* Botão flutuante de adicionar */}
-      <TouchableOpacity style={styles.floatingButton}>
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() =>
+          navigation.navigate('AddAppointment', {
+            addAppointment: (newAppointment) => {
+              setCompromissos((prev) => JSON.parse(JSON.stringify([...prev, newAppointment])));
+            },
+          })
+        }
+        activeOpacity={0.8} // Melhora feedback do toque no iOS
+      >
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
 
       {/* Barra de navegação inferior */}
-      <View style={styles.bottomNav}>
+      <View style={styles.bottomNav} pointerEvents="box-none">
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
           <Ionicons name="calendar" size={24} color="#2A6B7C" />
           <Text style={[styles.navText, styles.navTextActive]}>Início</Text>
@@ -273,7 +293,7 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: 'absolute',
     right: 20,
-    bottom: 90,
+    bottom: 100, // aumente para garantir que fique acima da barra
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -285,6 +305,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 5,
+    zIndex: 10, // garante que fique acima dos outros elementos
   },
   floatingButtonText: {
     fontSize: 30,
