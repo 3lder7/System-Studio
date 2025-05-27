@@ -12,8 +12,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { Button } from 'react-native';
-
 
 type RootStackParamList = {
   Home: undefined;
@@ -21,34 +19,12 @@ type RootStackParamList = {
 };
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
-
 const TelaInicial = () => {
   const navigation = useNavigation<NavigationProp>();
-  const [receitaHoje, setReceitaHoje] = useState(350);
-  const [compromissosHoje, setCompromissosHoje] = useState(4);
-  const [compromissos, setCompromissos] = useState([
-    {
-      id: 1,
-      horario: '09:00',
-      cliente: 'Clarisvete',
-      servico: 'Limpeza',
-      status: 'pago',
-    },
-    {
-      id: 2,
-      horario: '11:30',
-      cliente: 'Adalberto',
-      servico: 'Esfoliação',
-      status: 'pendente',
-    },
-    {
-      id: 3,
-      horario: '14:00',
-      cliente: 'Simone',
-      servico: 'Massagem',
-      status: 'pendente',
-    },
-  ]);
+
+  const [receitaHoje, setReceitaHoje] = useState(0);
+  const [compromissosHoje, setCompromissosHoje] = useState(0);
+  const [compromissos, setCompromissos] = useState<any[]>([]);
 
   // Componente para o card de estatísticas
   const StatCard = ({ title, value, prefix = '' }) => (
@@ -64,37 +40,23 @@ const TelaInicial = () => {
     </View>
   );
 
-  // Componente para o card de compromisso
-  const AppointmentCard = ({ horario, cliente, servico, status }) => (
-    <View style={styles.appointmentCard}>
-      <View style={styles.appointmentCardAccent} />
-      <View style={styles.appointmentTimeContainer}>
-        <Text style={styles.appointmentTime}>{horario}</Text>
+  // Componente para exibir os compromissos
+  const CommitmentItem = ({ compromisso }: { compromisso: any }) => (
+    <View style={styles.commitmentItem}>
+      <View style={styles.commitmentDetails}>
+        <Text style={styles.commitmentTitle}>{compromisso.cliente}</Text>
+        <Text style={styles.commitmentSubtitle}>{compromisso.servico}</Text>
+        <Text style={styles.commitmentDate}>
+          {compromisso.data} às {compromisso.horario}
+        </Text>
       </View>
-      <View style={styles.appointmentDetails}>
-        <Text style={styles.appointmentClient}>{cliente}</Text>
-        <Text style={styles.appointmentService}>{servico}</Text>
-      </View>
-      <View style={styles.appointmentStatusContainer}>
-        <View
-          style={[
-            styles.appointmentStatus,
-            status === 'pago'
-              ? styles.statusPaid
-              : styles.statusPending,
-          ]}
-        >
-          <Text
-            style={[
-              styles.appointmentStatusText,
-              status === 'pago'
-                ? styles.statusPaidText
-                : styles.statusPendingText,
-            ]}
-          >
-            {status === 'pago' ? 'Pago' : 'Pendente'}
-          </Text>
-        </View>
+      <View
+        style={[
+          styles.statusBadge,
+          compromisso.status === 'pendente' && styles.statusPendente,
+        ]}
+      >
+        <Text style={styles.statusText}>{compromisso.status}</Text>
       </View>
     </View>
   );
@@ -109,24 +71,19 @@ const TelaInicial = () => {
         <Text style={styles.greeting}>Olá, Maiane!</Text>
 
         {/* Cards de estatísticas */}
-        <StatCard title="Receita de hoje" value={receitaHoje.toFixed(2)} prefix="R$ " />
+        <StatCard title="Receita de hoje" value={'000.00'} prefix="R$ " />
         <StatCard title="Compromissos hoje" value={compromissosHoje} />
 
-        {/* Seção de próximos compromissos */}
-        <Text style={styles.sectionTitle}>Próximos compromissos</Text>
-
         {/* Lista de compromissos */}
-        {compromissos.map((compromisso) => (
-          <AppointmentCard
-            key={compromisso.id}
-            horario={compromisso.horario}
-            cliente={compromisso.cliente}
-            servico={compromisso.servico}
-            status={compromisso.status}
-          />
-        ))}
+        <Text style={styles.sectionTitle}>Próximos Compromissos</Text>
+        {compromissos.length > 0 ? (
+          compromissos.map((compromisso) => (
+            <CommitmentItem key={compromisso.id} compromisso={compromisso} />
+          ))
+        ) : (
+          <Text style={styles.noCommitmentsText}>Nenhum compromisso encontrado.</Text>
+        )}
 
-        {/* Espaço para garantir que o último item seja visível acima da barra de navegação */}
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
@@ -140,7 +97,7 @@ const TelaInicial = () => {
             },
           })
         }
-        activeOpacity={0.8} // Melhora feedback do toque no iOS
+        activeOpacity={0.8}
       >
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
@@ -218,82 +175,70 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#2A6B7C',
-    marginTop: 10,
-    marginBottom: 15,
+    marginBottom: 10,
   },
-  appointmentCard: {
+  noCommitmentsText: {
+    fontSize: 14,
+    color: '#999999',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  commitmentItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    marginBottom: 15,
-    flexDirection: 'row',
+    padding: 15,
+    marginBottom: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-    overflow: 'hidden',
+    shadowRadius: 4,
+    elevation: 2,
   },
-  appointmentCardAccent: {
-    width: 4,
-    backgroundColor: '#2A6B7C',
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-  },
-  appointmentTimeContainer: {
-    justifyContent: 'center',
-    paddingHorizontal: 15,
-  },
-  appointmentTime: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2A6B7C',
-  },
-  appointmentDetails: {
+  commitmentDetails: {
     flex: 1,
-    justifyContent: 'center',
-    paddingVertical: 15,
   },
-  appointmentClient: {
+  commitmentTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#333333',
   },
-  appointmentService: {
+  commitmentSubtitle: {
     fontSize: 14,
     color: '#666666',
-    marginTop: 2,
+    marginVertical: 5,
   },
-  appointmentStatusContainer: {
-    justifyContent: 'center',
-    paddingRight: 15,
+  commitmentDate: {
+    fontSize: 12,
+    color: '#999999',
   },
-  appointmentStatus: {
-    paddingHorizontal: 10,
+  statusBadge: {
     paddingVertical: 5,
-    borderRadius: 12,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,
   },
-  statusPaid: {
-    backgroundColor: '#4ECDC4',
-  },
-  statusPending: {
+  statusPendente: {
     backgroundColor: '#FFC145',
   },
-  appointmentStatusText: {
+  statusText: {
     fontSize: 12,
-    fontWeight: '500',
-  },
-  statusPaidText: {
-    color: '#FFFFFF',
-  },
-  statusPendingText: {
+    fontWeight: '600',
     color: '#333333',
+  },
+  bottomSpacer: {
+    height: 80,
   },
   floatingButton: {
     position: 'absolute',
     right: 20,
-    bottom: 100, // aumente para garantir que fique acima da barra
+    bottom: 100,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -305,7 +250,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 5,
-    zIndex: 10, // garante que fique acima dos outros elementos
+    zIndex: 10,
   },
   floatingButtonText: {
     fontSize: 30,
@@ -334,9 +279,6 @@ const styles = StyleSheet.create({
   },
   navTextActive: {
     color: '#2A6B7C',
-  },
-  bottomSpacer: {
-    height: 80,
   },
 });
 
