@@ -10,6 +10,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
@@ -21,27 +22,34 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
 
 const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
   const addAppointment = route.params?.addAppointment || (() => {});
-  const [horario, setHorario] = useState('');
+  const [horario, setHorario] = useState(new Date());
+  const [isPickerVisible, setPickerVisible] = useState(false);
   const [cliente, setCliente] = useState('');
   const [servico, setServico] = useState('');
   const [status, setStatus] = useState('pendente');
 
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    setPickerVisible(false);
+    if (selectedTime) {
+      setHorario(selectedTime);
+    }
+  };
+
   const handleAdd = () => {
-    console.log("Botão pressionado");
-    if (!horario || !cliente || !servico) {
+    if (!cliente || !servico) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
 
     const newAppointment = {
       id: Date.now(),
-      horario,
+      horario: horario.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       cliente,
       servico,
       status,
     };
 
-    console.log("Novo compromisso:", newAppointment);
+    console.log('Novo compromisso:', newAppointment);
     addAppointment(newAppointment);
     navigation.goBack();
   };
@@ -54,24 +62,46 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
       />
       <View style={styles.container}>
         <Text style={styles.title}>Adicionar Compromisso</Text>
-        <TextInput
+
+        {/* Horário */}
+        <TouchableOpacity
           style={styles.input}
-          placeholder="Horário (ex: 09:00)"
-          value={horario}
-          onChangeText={setHorario}
-        />
+          onPress={() => setPickerVisible(true)}
+        >
+          <Text>
+            {horario.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+          </Text>
+        </TouchableOpacity>
+
+        {isPickerVisible && (
+          <DateTimePicker
+            value={horario}
+            mode="time"
+            display="spinner"
+            onChange={handleTimeChange}
+            textColor="black" // Para garantir visibilidade no iOS
+          />
+        )}
+
+        {/* Nome do Cliente */}
         <TextInput
           style={styles.input}
           placeholder="Nome do Cliente"
+          placeholderTextColor="#999"
           value={cliente}
           onChangeText={setCliente}
         />
+
+        {/* Serviço a Ser Feito */}
         <TextInput
           style={styles.input}
           placeholder="Serviço"
+          placeholderTextColor="#999"
           value={servico}
           onChangeText={setServico}
         />
+
+        {/* Botão Adicionar */}
         <TouchableOpacity style={styles.button} onPress={handleAdd}>
           <Text style={styles.buttonText}>Adicionar</Text>
         </TouchableOpacity>
@@ -102,6 +132,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     backgroundColor: '#FFF',
+    justifyContent: 'center',
   },
   button: {
     backgroundColor: '#2A6B7C',
