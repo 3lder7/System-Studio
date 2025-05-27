@@ -22,17 +22,43 @@ type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
 
 const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
   const addAppointment = route.params?.addAppointment || (() => {});
+
+  const [dataConsulta, setDataConsulta] = useState(new Date());
   const [horario, setHorario] = useState(new Date());
-  const [isPickerVisible, setPickerVisible] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+
   const [cliente, setCliente] = useState('');
   const [servico, setServico] = useState('');
   const [status, setStatus] = useState('pendente');
 
-  const handleTimeChange = (event: any, selectedTime?: Date) => {
-    setPickerVisible(false);
-    if (selectedTime) {
-      setHorario(selectedTime);
+  const showDatePicker = () => {
+    setDatePickerVisible(true);
+  };
+
+  const showTimePicker = () => {
+    setTimePickerVisible(true);
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || dataConsulta;
+    // Sempre esconder o picker após a interação (Android fecha automaticamente, iOS precisa disso)
+    setDatePickerVisible(Platform.OS === 'ios'); // No iOS, o picker pode precisar ser fechado manualmente dependendo do modo
+    // Se uma data foi selecionada (evento 'set' ou iOS)
+    if (event.type === 'set' || Platform.OS === 'ios') {
+        setDataConsulta(currentDate);
     }
+    // Esconde explicitamente em ambos casos para garantir, especialmente se o usuário cancelar no Android
+    setDatePickerVisible(false);
+  };
+
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    const currentTime = selectedTime || horario;
+    setTimePickerVisible(Platform.OS === 'ios');
+    if (event.type === 'set' || Platform.OS === 'ios') {
+        setHorario(currentTime);
+    }
+    setTimePickerVisible(false);
   };
 
   const handleAdd = () => {
@@ -41,15 +67,21 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
       return;
     }
 
+    const formattedDate = dataConsulta.toLocaleDateString('pt-BR');
+    const formattedTime = horario.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     const newAppointment = {
       id: Date.now(),
-      horario: horario.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      data: formattedDate,
+      horario: formattedTime,
       cliente,
       servico,
       status,
     };
 
-    console.log('Novo compromisso:', newAppointment);
     addAppointment(newAppointment);
     navigation.goBack();
   };
@@ -63,27 +95,42 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
       <View style={styles.container}>
         <Text style={styles.title}>Adicionar Compromisso</Text>
 
-        {/* Horário */}
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setPickerVisible(true)}
-        >
-          <Text>
-            {horario.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+        <TouchableOpacity style={styles.input} onPress={showDatePicker}>
+          <Text style={styles.inputText}>
+            {dataConsulta.toLocaleDateString('pt-BR')}
           </Text>
         </TouchableOpacity>
 
-        {isPickerVisible && (
+        {isDatePickerVisible && (
           <DateTimePicker
-            value={horario}
-            mode="time"
-            display="spinner"
-            onChange={handleTimeChange}
-            textColor="black" // Para garantir visibilidade no iOS
+            value={dataConsulta}
+            mode="date"
+            // Alterado de 'spinner' para 'default' para tentar resolver o problema visual
+            display="default"
+            onChange={handleDateChange}
+            minimumDate={new Date()}
           />
         )}
 
-        {/* Nome do Cliente */}
+        <TouchableOpacity style={styles.input} onPress={showTimePicker}>
+          <Text style={styles.inputText}>
+            {horario.toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </Text>
+        </TouchableOpacity>
+
+        {isTimePickerVisible && (
+          <DateTimePicker
+            value={horario}
+            mode="time"
+            // Alterado de 'spinner' para 'default' para tentar resolver o problema visual
+            display="default"
+            onChange={handleTimeChange}
+          />
+        )}
+
         <TextInput
           style={styles.input}
           placeholder="Nome do Cliente"
@@ -92,7 +139,6 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
           onChangeText={setCliente}
         />
 
-        {/* Serviço a Ser Feito */}
         <TextInput
           style={styles.input}
           placeholder="Serviço"
@@ -101,7 +147,6 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
           onChangeText={setServico}
         />
 
-        {/* Botão Adicionar */}
         <TouchableOpacity style={styles.button} onPress={handleAdd}>
           <Text style={styles.buttonText}>Adicionar</Text>
         </TouchableOpacity>
@@ -133,6 +178,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#FFF',
     justifyContent: 'center',
+    minHeight: 40,
+  },
+  inputText: {
+    fontSize: 16,
+    color: '#333',
   },
   button: {
     backgroundColor: '#2A6B7C',
@@ -149,3 +199,4 @@ const styles = StyleSheet.create({
 });
 
 export default AddCompromissos;
+
