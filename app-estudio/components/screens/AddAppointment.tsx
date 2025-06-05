@@ -15,13 +15,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Home: undefined;
-  AddAppointment: { addAppointment: (newAppointment: any) => void };
+  AddAppointment?: { addAppointment: (newAppointment: any) => void };  // ✅ Agora é opcional
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
 
 const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
-  const addAppointment = route.params?.addAppointment || (() => {});
+  const addAppointment = route.params?.addAppointment ?? (() => {});  // ✅ Garantia de fallback
 
   const [dataConsulta, setDataConsulta] = useState(new Date());
   const [horario, setHorario] = useState(new Date());
@@ -40,25 +40,16 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
     setTimePickerVisible(true);
   };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
+  const handleDateChange = (_event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || dataConsulta;
-    // Sempre esconder o picker após a interação (Android fecha automaticamente, iOS precisa disso)
-    setDatePickerVisible(Platform.OS === 'ios'); // No iOS, o picker pode precisar ser fechado manualmente dependendo do modo
-    // Se uma data foi selecionada (evento 'set' ou iOS)
-    if (event.type === 'set' || Platform.OS === 'ios') {
-        setDataConsulta(currentDate);
-    }
-    // Esconde explicitamente em ambos casos para garantir, especialmente se o usuário cancelar no Android
     setDatePickerVisible(false);
+    setDataConsulta(currentDate);
   };
 
-  const handleTimeChange = (event: any, selectedTime?: Date) => {
+  const handleTimeChange = (_event: any, selectedTime?: Date) => {
     const currentTime = selectedTime || horario;
-    setTimePickerVisible(Platform.OS === 'ios');
-    if (event.type === 'set' || Platform.OS === 'ios') {
-        setHorario(currentTime);
-    }
     setTimePickerVisible(false);
+    setHorario(currentTime);
   };
 
   const handleAdd = () => {
@@ -105,7 +96,6 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
           <DateTimePicker
             value={dataConsulta}
             mode="date"
-            // Alterado de 'spinner' para 'default' para tentar resolver o problema visual
             display="default"
             onChange={handleDateChange}
             minimumDate={new Date()}
@@ -125,7 +115,6 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
           <DateTimePicker
             value={horario}
             mode="time"
-            // Alterado de 'spinner' para 'default' para tentar resolver o problema visual
             display="default"
             onChange={handleTimeChange}
           />
@@ -199,4 +188,3 @@ const styles = StyleSheet.create({
 });
 
 export default AddCompromissos;
-
