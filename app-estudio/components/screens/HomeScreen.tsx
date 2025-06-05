@@ -101,26 +101,6 @@ const TelaInicial = () => {
       >
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
-
-      {/* Barra de navegação inferior */}
-      <View style={styles.bottomNav} pointerEvents="box-none">
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <Ionicons name="calendar" size={24} color="#2A6B7C" />
-          <Text style={[styles.navText, styles.navTextActive]}>Início</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="list" size={24} color="#999999" />
-          <Text style={styles.navText}>Agenda</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="people" size={24} color="#999999" />
-          <Text style={styles.navText}>Clientes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="cash" size={24} color="#999999" />
-          <Text style={styles.navText}>Pagamentos</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -238,7 +218,7 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: 'absolute',
     right: 20,
-    bottom: 120,
+    bottom: 40,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -255,30 +235,6 @@ const styles = StyleSheet.create({
   floatingButtonText: {
     fontSize: 30,
     color: '#FFFFFF',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    height: 70,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-  },
-  navItem: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  navItemActive: {
-    borderTopWidth: 2,
-    borderTopColor: '#2A6B7C',
-  },
-  navText: {
-    fontSize: 12,
-    marginTop: 5,
-    color: '#999999',
-  },
-  navTextActive: {
-    color: '#2A6B7C',
   },
 });
 
