@@ -53,7 +53,7 @@ const TelaInicial = () => {
       <View
         style={[
           styles.statusBadge,
-          compromisso.status === 'pendente' && styles.statusPendente,
+          compromisso.status === 'Pendente' && styles.statusPendente,
         ]}
       >
         <Text style={styles.statusText}>{compromisso.status}</Text>
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: 'absolute',
     right: 20,
-    bottom: 100,
+    bottom: 120,
     width: 60,
     height: 60,
     borderRadius: 30,
