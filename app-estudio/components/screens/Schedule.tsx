@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,32 +12,108 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 const AgendaScreen = () => {
-  const commitments = [
-    { id: 1, time: '09:00', name: 'Clarisvete', service: 'Limpeza', status: 'Pago' },
-    { id: 2, time: '11:30', name: 'Adalberto', service: 'Esfoliação', status: 'Pendente' },
-    { id: 3, time: '14:00', name: 'Simone', service: 'Massagem', status: 'Pendente' },
-  ];
+  const today = new Date();
+  const [activeTab, setActiveTab] = useState<'Semana' | 'Dia' | 'Mês'>('Semana');
+  const [selectedDate, setSelectedDate] = useState(today);
 
-  const renderCommitment = (commitment: any) => (
-    <View key={commitment.id} style={styles.commitmentCard}>
-      <View style={styles.commitmentTimeContainer}>
-        <Text style={styles.commitmentTime}>{commitment.time}</Text>
+  const diaSemanaIndex = today.getDay();
+  const diaHoje = today.getDate();
+  const mesAtual = today.toLocaleString('default', { month: 'long' });
+  const anoAtual = today.getFullYear();
+  const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  const renderSemana = () => {
+      const semana: React.ReactNode[] = [];
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - diaSemanaIndex + i);
+      const isToday = date.toDateString() === today.toDateString();
+      const isSelected = date.toDateString() === selectedDate.toDateString();
+
+      semana.push(
+        <TouchableOpacity
+          key={i}
+          onPress={() => setSelectedDate(date)}
+          style={[
+            styles.weekDay,
+            isToday && styles.weekDayToday,
+            isSelected && styles.weekDaySelected,
+          ]}
+        >
+          <Text style={[styles.weekDayText, (isToday || isSelected) && styles.weekDayTextActive]}>
+            {diasDaSemana[i]}
+          </Text>
+          <Text style={[styles.weekDayDate, (isToday || isSelected) && styles.weekDayTextActive]}>
+            {date.getDate()}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <View>
+        <View style={styles.weekRow}>{semana}</View>
+        <Text style={styles.sectionSubtitle}>
+          Dia selecionado: {selectedDate.getDate()} de {mesAtual} de {anoAtual}
+        </Text>
       </View>
-      <View style={styles.commitmentDetailsContainer}>
-        <Text style={styles.commitmentName}>{commitment.name}</Text>
-        <Text style={styles.commitmentService}>{commitment.service}</Text>
+    );
+  };
+
+  const renderDia = () => {
+    const horas = Array.from({ length: 10 }, (_, i) => `${8 + i}:00`);
+
+    return (
+      <View>
+        <Text style={styles.sectionSubtitle}>
+          {diasDaSemana[selectedDate.getDay()]}, {selectedDate.getDate()} de {mesAtual} de {anoAtual}
+        </Text>
+        {horas.map((hora, index) => (
+          <View key={index} style={styles.timeSlot}>
+            <Text style={styles.timeSlotHour}>{hora}</Text>
+            <View style={styles.timeSlotLine} />
+          </View>
+        ))}
       </View>
-      <View
-        style={[
-          styles.commitmentStatusBadge,
-          commitment.status === 'Pago' && styles.statusPago,
-          commitment.status === 'Pendente' && styles.statusPendente,
-        ]}
-      >
-        <Text style={styles.commitmentStatusText}>{commitment.status}</Text>
+    );
+  };
+
+  const renderMes = () => {
+    const diasNoMes = new Date(anoAtual, today.getMonth() + 1, 0).getDate();
+    const dias = Array.from({ length: diasNoMes }, (_, i) => i + 1);
+
+    return (
+      <View>
+        <Text style={styles.sectionSubtitle}>
+          {mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1)} de {anoAtual}
+        </Text>
+        <View style={styles.calendarGrid}>
+          {dias.map((dia) => {
+            const isToday = dia === diaHoje;
+            return (
+              <View key={dia} style={[styles.calendarDay, isToday && styles.currentDay]}>
+                <Text style={styles.calendarDayText}>{dia}</Text>
+              </View>
+            );
+          })}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'Semana':
+        return renderSemana();
+      case 'Dia':
+        return renderDia();
+      case 'Mês':
+        return renderMes();
+      default:
+        return null;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -46,7 +122,9 @@ const AgendaScreen = () => {
         backgroundColor={Platform.OS === 'android' ? '#F8F9FA' : undefined}
       />
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Abril 2025</Text>
+        <Text style={styles.headerTitle}>
+          {mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1)} {anoAtual}
+        </Text>
         <View style={styles.headerControls}>
           <TouchableOpacity>
             <Ionicons name="chevron-back" size={24} color="#2A6B7C" />
@@ -59,19 +137,15 @@ const AgendaScreen = () => {
 
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.tabBar}>
-          <Text style={[styles.tabItem, styles.tabActive]}>Semana</Text>
-          <Text style={styles.tabItem}>Dia</Text>
-          <Text style={styles.tabItem}>Mês</Text>
+          {['Semana', 'Dia', 'Mês'].map((tab) => (
+            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab as any)}>
+              <Text style={[styles.tabItem, activeTab === tab && styles.tabActive]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        <Text style={styles.sectionTitle}>Compromissos - 29 de Abril</Text>
-
-        {commitments.map((commitment) => renderCommitment(commitment))}
+        {renderTabContent()}
       </ScrollView>
-
-      <TouchableOpacity style={styles.floatingButton}>
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -117,79 +191,83 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textDecorationLine: 'underline',
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2A6B7C',
+  sectionSubtitle: {
+    fontSize: 16,
     marginBottom: 10,
+    color: '#3339',
   },
-  commitmentCard: {
+
+  // Semana
+  weekRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    gap: 8,
+  },
+  weekDay: {
+    flex: 1,
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#E8EEF1',
   },
-  commitmentTimeContainer: {
-    marginRight: 15,
+  weekDayToday: {
+    backgroundColor: '#2A6B7C',
   },
-  commitmentTime: {
+  weekDaySelected: {
+    backgroundColor: '#144A59',
+  },
+  weekDayText: {
+    color: '#2A6B7C',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  weekDayTextActive: {
+    color: '#FFFFFF',
+  },
+  weekDayDate: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#2A6B7C',
   },
-  commitmentDetailsContainer: {
+
+  // Dia
+  timeSlot: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  timeSlotHour: {
+    width: 60,
+    fontSize: 14,
+    color: '#444',
+  },
+  timeSlotLine: {
+    height: 1,
+    backgroundColor: '#CCC',
     flex: 1,
   },
-  commitmentName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
+
+  // Mês
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
   },
-  commitmentService: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  commitmentStatusBadge: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 15,
-    alignItems: 'center',
+  calendarDay: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E8EEF1',
     justifyContent: 'center',
-    minWidth: 80,
+    alignItems: 'center',
   },
-  statusPago: {
-    backgroundColor: '#4ECDC4',
-  },
-  statusPendente: {
-    backgroundColor: '#FFC145',
-  },
-  commitmentStatusText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  floatingButton: {
-    position: 'absolute',
-    right: 20,
-    bottom: 100,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  currentDay: {
     backgroundColor: '#2A6B7C',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
+  },
+  calendarDayText: {
+    color: '#2A6B7C',
+    fontWeight: '600',
   },
 });
 
