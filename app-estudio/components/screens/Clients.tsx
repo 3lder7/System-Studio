@@ -88,7 +88,7 @@ const ClientesScreen = () => {
 
       {/* Botão flutuante */}
       <TouchableOpacity style={styles.floatingButton} onPress={() => setModalVisible(true)}>
-        <Ionicons name="add" size={28} color="#FFF" />
+        <Ionicons name="add" size={25} color="#FFF" />
       </TouchableOpacity>
 
       {/* Modal para adicionar cliente */}
@@ -171,14 +171,19 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: 'absolute',
     right: 20,
-    bottom: 30,
+    bottom: 40,
     width: 60,
     height: 60,
     borderRadius: 30,
     backgroundColor: '#2A6B7C',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
     elevation: 5,
+    zIndex: 10,
   },
   modalContainer: {
     flex: 1,
@@ -223,6 +228,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFF',
-    fontWeight: '600',
+    fontWeight: '300',
   },
 });
