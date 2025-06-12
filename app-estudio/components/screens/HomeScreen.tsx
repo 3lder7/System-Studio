@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  SafeAreaView, 
-  StatusBar, 
-  Platform 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  Platform,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
 
 type RootStackParamList = {
   Home: undefined;
@@ -41,26 +41,88 @@ const TelaInicial = () => {
   );
 
   // Componente para exibir os compromissos
-const CommitmentItem = ({ compromisso }: { compromisso: any }) => (
-  <View style={styles.commitmentItem}>
-    <View style={styles.commitmentDetails}>
-      <Text style={styles.commitmentTitle}>{compromisso.cliente}</Text>
-      <Text style={styles.commitmentSubtitle}>{compromisso.servico}</Text>
-      <Text style={styles.commitmentSubtitle}>Valor: R$ {compromisso.valor}</Text>
-      <Text style={styles.commitmentDate}>
-        {compromisso.data} às {compromisso.horario}
-      </Text>
-    </View>
-    <View
-      style={[
-        styles.statusBadge,
-        compromisso.status === 'Pendente' && styles.statusPendente,
-      ]}
-    >
-      <Text style={styles.statusText}>{compromisso.status}</Text>
-    </View>
-  </View>
-);
+  const CommitmentItem = ({ compromisso }: { compromisso: any }) => {
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    const handlePress = () => {
+      Alert.alert(
+        'Atualizar Status',
+        `Escolha o novo status para ${compromisso.cliente}`,
+        [
+          {
+            text: 'Pago',
+            onPress: () => updateStatus('Pago'),
+          },
+          {
+            text: 'Cancelado',
+            onPress: () => updateStatus('Cancelado'),
+          },
+          {
+            text: 'Pendente',
+            onPress: () => updateStatus('Pendente'),
+          },
+          {
+            text: 'Fechar',
+            style: 'cancel',
+          },
+        ]
+      );
+    };
+
+    const updateStatus = (novoStatus: string) => {
+      setCompromissos((prev) =>
+        prev.map((item) => {
+          if (item.id === compromisso.id) {
+            if (
+              item.status !== 'Cancelado' &&
+              novoStatus === 'Cancelado' &&
+              item.data === hoje
+            ) {
+              setReceitaHoje((prev) => prev - parseFloat(item.valor));
+              setCompromissosHoje((prev) => prev - 1);
+            }
+            if (
+              item.status === 'Cancelado' &&
+              novoStatus !== 'Cancelado' &&
+              item.data === hoje
+            ) {
+              setReceitaHoje((prev) => prev + parseFloat(item.valor));
+              setCompromissosHoje((prev) => prev + 1);
+            }
+            return { ...item, status: novoStatus };
+          }
+          return item;
+        })
+      );
+    };
+
+    return (
+      <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+        <View style={styles.commitmentItem}>
+          <View style={styles.commitmentDetails}>
+            <Text style={styles.commitmentTitle}>{compromisso.cliente}</Text>
+            <Text style={styles.commitmentSubtitle}>{compromisso.servico}</Text>
+            <Text style={[styles.commitmentSubtitle, { fontWeight: 'bold', color: '#2A6B7C' }]}>
+              Valor: R$ {compromisso.valor}
+            </Text>
+            <Text style={styles.commitmentDate}>
+              {compromisso.data} às {compromisso.horario}
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.statusBadge,
+              compromisso.status === 'Pendente' && styles.statusPendente,
+              compromisso.status === 'Cancelado' && { backgroundColor: '#FF6B6B' },
+              compromisso.status === 'Pago' && { backgroundColor: '#4ECDC4' },
+            ]}
+          >
+            <Text style={styles.statusText}>{compromisso.status}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -71,11 +133,9 @@ const CommitmentItem = ({ compromisso }: { compromisso: any }) => (
       <ScrollView style={styles.container}>
         <Text style={styles.greeting}>Olá, Maiane!</Text>
 
-        {/* Cards de estatísticas */}
-        <StatCard title="Receita de hoje" value={'000.00'} prefix="R$ " />
+        <StatCard title="Receita de hoje" value={receitaHoje.toFixed(2)} prefix="R$ " />
         <StatCard title="Compromissos hoje" value={compromissosHoje} />
 
-        {/* Lista de compromissos */}
         <Text style={styles.sectionTitle}>Próximos Compromissos</Text>
         {compromissos.length > 0 ? (
           compromissos.map((compromisso) => (
@@ -94,7 +154,13 @@ const CommitmentItem = ({ compromisso }: { compromisso: any }) => (
         onPress={() =>
           navigation.navigate('AddAppointment', {
             addAppointment: (newAppointment) => {
-              setCompromissos((prev) => JSON.parse(JSON.stringify([...prev, newAppointment])));
+              const hoje = new Date().toLocaleDateString('pt-BR');
+              setCompromissos((prev) => [...prev, newAppointment]);
+
+              if (newAppointment.data === hoje) {
+                setCompromissosHoje((prev) => prev + 1);
+                setReceitaHoje((prev) => prev + parseFloat(newAppointment.valor));
+              }
             },
           })
         }
@@ -191,7 +257,7 @@ const styles = StyleSheet.create({
   commitmentSubtitle: {
     fontSize: 14,
     color: '#666666',
-    marginVertical: 5,
+    marginVertical: 2,
   },
   commitmentDate: {
     fontSize: 12,
