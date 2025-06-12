@@ -41,25 +41,26 @@ const TelaInicial = () => {
   );
 
   // Componente para exibir os compromissos
-  const CommitmentItem = ({ compromisso }: { compromisso: any }) => (
-    <View style={styles.commitmentItem}>
-      <View style={styles.commitmentDetails}>
-        <Text style={styles.commitmentTitle}>{compromisso.cliente}</Text>
-        <Text style={styles.commitmentSubtitle}>{compromisso.servico}</Text>
-        <Text style={styles.commitmentDate}>
-          {compromisso.data} às {compromisso.horario}
-        </Text>
-      </View>
-      <View
-        style={[
-          styles.statusBadge,
-          compromisso.status === 'Pendente' && styles.statusPendente,
-        ]}
-      >
-        <Text style={styles.statusText}>{compromisso.status}</Text>
-      </View>
+const CommitmentItem = ({ compromisso }: { compromisso: any }) => (
+  <View style={styles.commitmentItem}>
+    <View style={styles.commitmentDetails}>
+      <Text style={styles.commitmentTitle}>{compromisso.cliente}</Text>
+      <Text style={styles.commitmentSubtitle}>{compromisso.servico}</Text>
+      <Text style={styles.commitmentSubtitle}>Valor: R$ {compromisso.valor}</Text>
+      <Text style={styles.commitmentDate}>
+        {compromisso.data} às {compromisso.horario}
+      </Text>
     </View>
-  );
+    <View
+      style={[
+        styles.statusBadge,
+        compromisso.status === 'Pendente' && styles.statusPendente,
+      ]}
+    >
+      <Text style={styles.statusText}>{compromisso.status}</Text>
+    </View>
+  </View>
+);
 
   return (
     <SafeAreaView style={styles.safeArea}>

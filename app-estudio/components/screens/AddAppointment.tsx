@@ -15,13 +15,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Home: undefined;
-  AddAppointment?: { addAppointment: (newAppointment: any) => void };  // ✅ Agora é opcional
+  AddAppointment: { addAppointment: (newAppointment: any) => void };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
 
 const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
-  const addAppointment = route.params?.addAppointment ?? (() => {});  // ✅ Garantia de fallback
+  const addAppointment = route.params?.addAppointment || (() => {});
 
   const [dataConsulta, setDataConsulta] = useState(new Date());
   const [horario, setHorario] = useState(new Date());
@@ -30,30 +30,30 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
 
   const [cliente, setCliente] = useState('');
   const [servico, setServico] = useState('');
-  const [status, setStatus] = useState('pendente');
+  const [valor, setValor] = useState('');
+  const [status, setStatus] = useState('Pendente');
 
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
-  };
+  const showDatePicker = () => setDatePickerVisible(true);
+  const showTimePicker = () => setTimePickerVisible(true);
 
-  const showTimePicker = () => {
-    setTimePickerVisible(true);
-  };
-
-  const handleDateChange = (_event: any, selectedDate?: Date) => {
+  const handleDateChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || dataConsulta;
+    if (event.type === 'set' || Platform.OS === 'ios') {
+      setDataConsulta(currentDate);
+    }
     setDatePickerVisible(false);
-    setDataConsulta(currentDate);
   };
 
-  const handleTimeChange = (_event: any, selectedTime?: Date) => {
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
     const currentTime = selectedTime || horario;
+    if (event.type === 'set' || Platform.OS === 'ios') {
+      setHorario(currentTime);
+    }
     setTimePickerVisible(false);
-    setHorario(currentTime);
   };
 
   const handleAdd = () => {
-    if (!cliente || !servico) {
+    if (!cliente || !servico || !valor) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
@@ -70,6 +70,7 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
       horario: formattedTime,
       cliente,
       servico,
+      valor,
       status,
     };
 
@@ -134,6 +135,15 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
           placeholderTextColor="#999"
           value={servico}
           onChangeText={setServico}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Valor do Serviço (R$)"
+          placeholderTextColor="#999"
+          keyboardType="numeric"
+          value={valor}
+          onChangeText={setValor}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleAdd}>
