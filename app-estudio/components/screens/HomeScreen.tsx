@@ -41,7 +41,6 @@ const TelaInicial = () => {
     </View>
   );
 
-  // Componente para exibir os compromissos
   const CommitmentItem = ({ compromisso }: { compromisso: any }) => {
     const hoje = new Date().toLocaleDateString('pt-BR');
 
