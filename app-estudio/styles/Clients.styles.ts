@@ -1,0 +1,101 @@
+import { StyleSheet } from 'react-native';
+import styles from '../../styles/Clients.styles';
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#999',
+    fontSize: 16,
+  },
+  clienteCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    marginBottom: 12,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  clienteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  clienteNome: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2A6B7C',
+  },
+  clienteInfo: {
+    marginTop: 4,
+    color: '#555',
+  },
+  floatingButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 40,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#2A6B7C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+    zIndex: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#2A6B7C',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 12,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10,
+  },
+  cancelButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#CCC',
+    borderRadius: 8,
+  },
+  saveButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#2A6B7C',
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#FFF',
+    fontWeight: '300',
+  },
+});
