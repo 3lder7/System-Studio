@@ -20,7 +20,7 @@ type RootStackParamList = {
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={TelaInicial} options={{ headerShown: false }} />
+      <Stack.Screen name="HomeStack" component={TelaInicial} options={{ headerShown: false }} />
       <Stack.Screen name="AddAppointment" component={AddCompromissos} />
     </Stack.Navigator>
   );
@@ -34,7 +34,7 @@ export default function AppNavigation() {
           tabBarIcon: ({ color, size }) => {
             let iconName: any;
             switch (route.name) {
-              case 'Home': iconName = 'calendar'; break;
+              case 'Principal': iconName = 'calendar'; break;
               case 'Agenda': iconName = 'list'; break;
               case 'Clientes': iconName = 'people'; break;
               case 'Pagamentos': iconName = 'card'; break;
@@ -45,7 +45,7 @@ export default function AppNavigation() {
           tabBarInactiveTintColor: 'gray',
         })}
       >
-        <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
+        <Tab.Screen name="Principal" component={HomeStack} options={{ headerShown: false }} />
         <Tab.Screen name="Agenda" component={AgendaScreen} />
         <Tab.Screen name="Clientes" component={ClientesScreen} />
         <Tab.Screen name="Pagamentos" component={PagamentosScreen} />
@@ -53,3 +53,4 @@ export default function AppNavigation() {
     </NavigationContainer>
   );
 }
+
