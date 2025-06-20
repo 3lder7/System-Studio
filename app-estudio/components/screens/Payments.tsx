@@ -42,7 +42,6 @@ const PagamentosScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Tabs de Navegação */}
       <View style={styles.tabBar}>
         <TouchableOpacity onPress={() => setActiveTab('diario')}>
           <Text style={[styles.tabItem, activeTab === 'diario' && styles.tabActive]}>
