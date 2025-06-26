@@ -20,7 +20,7 @@ type RootStackParamList = {
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="HomeStack" component={TelaInicial} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={TelaInicial} options={{ headerShown: false }} />
       <Stack.Screen name="AddAppointment" component={AddCompromissos} />
     </Stack.Navigator>
   );
