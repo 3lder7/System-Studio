@@ -98,3 +98,5 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
 });
+
+export default styles;
