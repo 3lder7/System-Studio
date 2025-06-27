@@ -27,7 +27,7 @@ const TelaInicial = () => {
   const [compromissosHoje, setCompromissosHoje] = useState(0);
   const [compromissos, setCompromissos] = useState<any[]>([]);
 
-  // Componente para o card de estatísticas
+  //Card de estatísticas
   const StatCard = ({ title, value, prefix = '' }) => (
     <View style={styles.statCard}>
       <View style={styles.statCardAccent} />
