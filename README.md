@@ -1,4 +1,4 @@
-# Sistema de Estúdio💅🏼
+# Sistema de Estúdio
 
 - Node.js:
 Base para o backend (servidor) do aplicativo
