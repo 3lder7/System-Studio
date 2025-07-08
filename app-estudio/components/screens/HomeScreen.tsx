@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../styles/HomeScreen.styles';
+import { salvarItem, carregarItem } from '../storage'; 
+
 import {
   View,
   Text,
@@ -26,6 +28,18 @@ const TelaInicial = () => {
   const [receitaHoje, setReceitaHoje] = useState(0);
   const [compromissosHoje, setCompromissosHoje] = useState(0);
   const [compromissos, setCompromissos] = useState<any[]>([]);
+
+  // Carregar compromissos ao iniciar
+  useEffect(() => {
+    carregarItem<any[]>('compromissos').then((dados) => {
+      if (dados) setCompromissos(dados);
+    });
+  }, []);
+
+  // Salvar compromissos sempre que mudar
+  useEffect(() => {
+    salvarItem('compromissos', compromissos);
+  }, [compromissos]);
 
   //Card de estatísticas
   const StatCard = ({ title, value, prefix = '' }) => (
