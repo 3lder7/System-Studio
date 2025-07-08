@@ -12,17 +12,18 @@ import {
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { salvarItem, carregarItem } from '../storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Home: undefined;
-  AddAppointment: { addAppointment: (newAppointment: any) => void };
+  AddAppointment: undefined; // Não passe funções aqui!
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
 
 const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
-  const addAppointment = route.params?.addAppointment || (() => {});
+  // Removido: addAppointment não é passado por params e não é necessário aqui.
 
   const [dataConsulta, setDataConsulta] = useState(new Date());
   const [horario, setHorario] = useState(new Date());
@@ -53,31 +54,37 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
     setTimePickerVisible(false);
   };
 
-  const handleAdd = () => {
-    if (!cliente || !servico || !valor) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-      return;
-    }
+const handleAdd = async () => {
+  if (!cliente || !servico || !valor) {
+    Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+    return;
+  }
 
-    const formattedDate = dataConsulta.toLocaleDateString('pt-BR');
-    const formattedTime = horario.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const formattedDate = dataConsulta.toLocaleDateString('pt-BR');
+  const formattedTime = horario.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
-    const newAppointment = {
-      id: Date.now(),
-      data: formattedDate,
-      horario: formattedTime,
-      cliente,
-      servico,
-      valor,
-      status,
-    };
-
-    addAppointment(newAppointment);
-    navigation.goBack();
+  const newAppointment = {
+    id: Date.now(),
+    data: formattedDate,
+    horario: formattedTime,
+    cliente,
+    servico,
+    valor,
+    status,
   };
+
+  // Carrega compromissos existentes
+  const compromissos = (await carregarItem<any[]>('compromissos')) || [];
+  // Adiciona o novo
+  const novosCompromissos = [...compromissos, newAppointment];
+  // Salva no AsyncStorage
+  await salvarItem('compromissos', novosCompromissos);
+
+  navigation.goBack();
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>

@@ -11,12 +11,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
-
 type RootStackParamList = {
   Home: undefined;
-  AddAppointment: { addAppointment: (newAppointment: any) => void };
+  AddAppointment:undefined;
 };
-
 function HomeStack() {
   return (
     <Stack.Navigator>

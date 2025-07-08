@@ -18,7 +18,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Home: undefined;
-  AddAppointment: { addAppointment: (newAppointment: any) => void };
+  AddAppointment: undefined;
 };
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -165,19 +165,7 @@ const TelaInicial = () => {
       {/* Botão flutuante de adicionar */}
       <TouchableOpacity
         style={styles.floatingButton}
-        onPress={() =>
-          navigation.navigate('AddAppointment', {
-            addAppointment: (newAppointment) => {
-              const hoje = new Date().toLocaleDateString('pt-BR');
-              setCompromissos((prev) => [...prev, newAppointment]);
-
-              if (newAppointment.data === hoje) {
-                setCompromissosHoje((prev) => prev + 1);
-                setReceitaHoje((prev) => prev + parseFloat(newAppointment.valor));
-              }
-            },
-          })
-        }
+        onPress={() => navigation.navigate('AddAppointment')}
         activeOpacity={0.8}
       >
         <Text style={styles.floatingButtonText}>+</Text>
