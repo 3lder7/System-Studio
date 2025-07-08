@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../styles/Clients.styles';
 import {
   View,
@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { salvarItem, carregarItem } from '../storage'; 
 
 type Cliente = {
   id: string;
@@ -25,6 +26,18 @@ const ClientesScreen = () => {
   const [nome, setNome] = useState('');
   const [numero, setNumero] = useState('');
   const [observacao, setObservacao] = useState('');
+
+    // Carregar clientes ao iniciar
+  useEffect(() => {
+    carregarItem<Cliente[]>('clientes').then((dados) => {
+      if (dados) setClientes(dados);
+    });
+  }, []);
+
+  // Salvar clientes sempre que mudar
+  useEffect(() => {
+    salvarItem('clientes', clientes);
+  }, [clientes]);
 
   const adicionarCliente = () => {
     if (!nome.trim() || !numero.trim()) {
