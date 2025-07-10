@@ -151,6 +151,4 @@ const AgendaScreen = () => {
   );
 };
 
-
-
 export default AgendaScreen;

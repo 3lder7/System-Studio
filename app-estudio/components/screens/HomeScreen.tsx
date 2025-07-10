@@ -69,7 +69,7 @@ const TelaInicial = () => {
           },
           {
             text: 'Cancelado',
-            onPress: () => updateStatus('Cancelado'),
+            onPress: handleCancel, //Chama a função handleCancel 
           },
           {
             text: 'Pendente',
@@ -83,32 +83,59 @@ const TelaInicial = () => {
       );
     };
 
-    const updateStatus = (novoStatus: string) => {
-      setCompromissos((prev) =>
-        prev.map((item) => {
-          if (item.id === compromisso.id) {
-            if (
-              item.status !== 'Cancelado' &&
-              novoStatus === 'Cancelado' &&
-              item.data === hoje
-            ) {
-              setReceitaHoje((prev) => prev - parseFloat(item.valor));
-              setCompromissosHoje((prev) => prev - 1);
-            }
-            if (
-              item.status === 'Cancelado' &&
-              novoStatus !== 'Cancelado' &&
-              item.data === hoje
-            ) {
-              setReceitaHoje((prev) => prev + parseFloat(item.valor));
-              setCompromissosHoje((prev) => prev + 1);
-            }
-            return { ...item, status: novoStatus };
-          }
-          return item;
-        })
-      );
+    //Função para tratar o cancelamento
+    const handleCancel = () => {
+      updateStatus('Cancelado');
+      setTimeout(() => {
+        Alert.alert(
+          'Compromisso Cancelado',
+          'Deseja deletar este compromisso? 🗑️',
+          [
+            {
+              text: 'Sim, deletar',
+              style: 'destructive',
+              onPress: () => deleteCommitment(),
+            },
+            {
+              text: 'Não',
+              style: 'cancel',
+            },
+          ]
+        );
+      }, 300);
     };
+
+    //Função para deletar o compromisso
+    const deleteCommitment = () => {
+      setCompromissos((prev) => prev.filter((item) => item.id !== compromisso.id));
+    };
+
+  const updateStatus = (novoStatus: string) => {
+    setCompromissos((prev) =>
+      prev.map((item) => {
+        if (item.id === compromisso.id) {
+          if (
+            item.status !== 'Cancelado' &&
+            novoStatus === 'Cancelado' &&
+            item.data === hoje
+          ) {
+            setReceitaHoje((prev) => prev - parseFloat(item.valor));
+            setCompromissosHoje((prev) => prev - 1);
+          }
+          if (
+            item.status === 'Cancelado' &&
+            novoStatus !== 'Cancelado' &&
+            item.data === hoje
+          ) {
+            setReceitaHoje((prev) => prev + parseFloat(item.valor));
+            setCompromissosHoje((prev) => prev + 1);
+          }
+          return { ...item, status: novoStatus };
+        }
+        return item;
+      })
+    );
+  }
 
     return (
       <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
