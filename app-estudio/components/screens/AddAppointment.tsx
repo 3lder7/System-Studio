@@ -17,7 +17,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Home: undefined;
-  AddAppointment: undefined; // Não passe funções aqui!
+  AddAppointment: undefined; 
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
