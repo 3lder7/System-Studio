@@ -53,6 +53,15 @@ const TelaInicial = () => {
     setCompromissosHoje(countHoje);
   }, [compromissos]);
 
+  // Atualiza receitaHoje sempre que compromissos mudam
+  useEffect(() => {
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    const receita = compromissos
+      .filter((item) => item.data === hoje && item.status !== 'Cancelado')
+      .reduce((total, item) => total + parseFloat(item.valor), 0);
+    setReceitaHoje(Math.max(receita, 0));
+  }, [compromissos]);
+
   //Card de estatísticas
   const StatCard = ({ title, value, prefix = '' }) => (
     <View style={styles.statCard}>
