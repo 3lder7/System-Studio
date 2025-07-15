@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 
 type RootStackParamList = {
   Home: undefined;
@@ -29,12 +30,14 @@ const TelaInicial = () => {
   const [compromissosHoje, setCompromissosHoje] = useState(0);
   const [compromissos, setCompromissos] = useState<any[]>([]);
 
-  // Carregar compromissos ao iniciar
-  useEffect(() => {
-    carregarItem<any[]>('compromissos').then((dados) => {
-      if (dados) setCompromissos(dados);
-    });
-  }, []);
+  // Carregar compromissos ao iniciar e ao voltar para a tela
+  useFocusEffect(
+    React.useCallback(() => {
+      carregarItem<any[]>('compromissos').then((dados) => {
+        if (dados) setCompromissos(dados);
+      });
+    }, [])
+  );
 
   // Salvar compromissos sempre que mudar
   useEffect(() => {
