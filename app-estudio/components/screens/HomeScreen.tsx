@@ -44,6 +44,15 @@ const TelaInicial = () => {
     salvarItem('compromissos', compromissos);
   }, [compromissos]);
 
+  // Atualiza compromissosHoje sempre que compromissos mudam
+  useEffect(() => {
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    const countHoje = compromissos.filter(
+      (item) => item.data === hoje && item.status !== 'Cancelado'
+    ).length;
+    setCompromissosHoje(countHoje);
+  }, [compromissos]);
+
   //Card de estatísticas
   const StatCard = ({ title, value, prefix = '' }) => (
     <View style={styles.statCard}>
@@ -123,7 +132,6 @@ const TelaInicial = () => {
             item.data === hoje
           ) {
             setReceitaHoje((prev) => prev - parseFloat(item.valor));
-            setCompromissosHoje((prev) => prev - 1);
           }
           if (
             item.status === 'Cancelado' &&
@@ -131,7 +139,6 @@ const TelaInicial = () => {
             item.data === hoje
           ) {
             setReceitaHoje((prev) => prev + parseFloat(item.valor));
-            setCompromissosHoje((prev) => prev + 1);
           }
           return { ...item, status: novoStatus };
         }
