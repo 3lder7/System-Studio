@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../styles/Schedule.styles';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
   StatusBar,
   Platform,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { carregarItem, salvarItem } from '../storage';
 
 const AgendaScreen = () => {
   const today = new Date();
-  const [activeTab, setActiveTab] = useState<'Semana' | 'Dia' | 'Mês'>('Semana');
   const [selectedDate, setSelectedDate] = useState(today);
-
-  // Novo estado para mês e ano
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [compromissos, setCompromissos] = useState<any[]>([]);
 
-  const diaHoje = today.getDate();
   const mesAtual = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
   const anoAtual = currentYear;
-  const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-  // Funções para alterar mês
+  useEffect(() => {
+    carregarItem<any[]>('compromissos').then((dados) => {
+      if (dados) setCompromissos(dados);
+    });
+  }, []);
+
+  const updateStatus = (id: number, novoStatus: string) => {
+    const novos = compromissos.map((item) =>
+      item.id === id ? { ...item, status: novoStatus } : item
+    );
+    setCompromissos(novos);
+    salvarItem('compromissos', novos);
+  };
+
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
@@ -34,7 +44,6 @@ const AgendaScreen = () => {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
-    // Atualiza o dia selecionado para o primeiro dia do novo mês
     setSelectedDate(new Date(currentYear, currentMonth === 0 ? 11 : currentMonth - 1, 1));
   };
 
@@ -45,80 +54,99 @@ const AgendaScreen = () => {
     } else {
       setCurrentMonth(currentMonth + 1);
     }
-    // Atualiza o dia selecionado para o primeiro dia do novo mês
     setSelectedDate(new Date(currentYear, currentMonth === 11 ? 0 : currentMonth + 1, 1));
   };
 
-  const renderSemana = () => {
-    const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const dias = Array.from({ length: diasNoMes }, (_, i) => i + 1);
+  // Compromissos do dia selecionado
+  const compromissosDoDia = compromissos.filter(
+    (item) =>
+      item.data === selectedDate.toLocaleDateString('pt-BR')
+  );
 
-    return (
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.weekRow}
-        >
-          {dias.map((dia) => {
-            const date = new Date(currentYear, currentMonth, dia);
-            const isToday = date.toDateString() === today.toDateString();
-            const isSelected = date.toDateString() === selectedDate.toDateString();
-
-            return (
-              <TouchableOpacity
-                key={dia}
-                onPress={() => setSelectedDate(date)}
-                style={[
-                  styles.weekDay,
-                  isToday && styles.weekDayToday,
-                  isSelected && styles.weekDaySelected,
-                ]}
-              >
-                <Text style={[
-                  styles.weekDayText,
-                  (isToday || isSelected) && styles.weekDayTextActive
-                ]}>
-                  {diasDaSemana[date.getDay()]}
+  // Renderização dos compromissos do dia
+  const renderCompromissosDia = () => (
+    <View>
+      {compromissosDoDia.length === 0 ? (
+        <Text style={{ color: '#999', marginTop: 10 }}>Nenhum compromisso para este dia.</Text>
+      ) : (
+        compromissosDoDia.map((compromisso) => (
+          <TouchableOpacity
+            key={compromisso.id}
+            onPress={() =>
+              Alert.alert(
+                'Atualizar Status',
+                `Escolha o novo status para ${compromisso.cliente}`,
+                [
+                  { text: 'Pago', onPress: () => updateStatus(compromisso.id, 'Pago') },
+                  { text: 'Cancelado', onPress: () => updateStatus(compromisso.id, 'Cancelado') },
+                  { text: 'Pendente', onPress: () => updateStatus(compromisso.id, 'Pendente') },
+                  { text: 'Fechar', style: 'cancel' },
+                ]
+              )
+            }
+            activeOpacity={0.7}
+          >
+            <View style={{
+              backgroundColor: '#fff',
+              borderRadius: 8,
+              padding: 12,
+              marginBottom: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              shadowColor: '#000',
+              shadowOpacity: 0.05,
+              shadowOffset: { width: 0, height: 2 },
+              shadowRadius: 4,
+              elevation: 2,
+            }}>
+              <View>
+                <Text style={{ fontWeight: 'bold', color: '#2A6B7C' }}>{compromisso.cliente}</Text>
+                <Text style={{ color: '#666' }}>{compromisso.servico}</Text>
+                <Text style={{ color: '#2A6B7C', fontWeight: 'bold' }}>Valor: R$ {compromisso.valor}</Text>
+                <Text style={{ color: '#999' }}>{compromisso.data} às {compromisso.horario}</Text>
+              </View>
+              <View style={{
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                borderRadius: 15,
+                backgroundColor:
+                  compromisso.status === 'Pendente'
+                    ? '#FFC145'
+                    : compromisso.status === 'Cancelado'
+                    ? '#FF6B6B'
+                    : '#4ECDC4',
+              }}>
+                <Text style={{ color: '#333', fontWeight: '600', fontSize: 12 }}>
+                  {compromisso.status}
                 </Text>
-                <Text style={[
-                  styles.weekDayDate,
-                  (isToday || isSelected) && styles.weekDayTextActive
-                ]}>
-                  {dia}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-        <Text style={styles.sectionSubtitle}>
-          Dia selecionado: {selectedDate.getDate()} de {mesAtual} de {anoAtual}
-        </Text>
-      </View>
-    );
-  };
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))
+      )}
+    </View>
+  );
 
-  const renderDia = () => {
-    const horas = Array.from({ length: 10 }, (_, i) => `${8 + i}:00`);
-
-    return (
-      <View>
-        <Text style={styles.sectionSubtitle}>
-          {diasDaSemana[selectedDate.getDay()]}, {selectedDate.getDate()} de {mesAtual} de {anoAtual}
-        </Text>
-        {horas.map((hora, index) => (
-          <View key={index} style={styles.timeSlot}>
-            <Text style={styles.timeSlotHour}>{hora}</Text>
-            <View style={styles.timeSlotLine} />
-          </View>
-        ))}
-      </View>
-    );
-  };
-
+  // Renderização do mês
   const renderMes = () => {
     const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
     const dias = Array.from({ length: diasNoMes }, (_, i) => i + 1);
+    const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const today = new Date();
+
+    // Cria um Set com os dias do mês que possuem compromissos
+    const diasComCompromissos = new Set(
+      compromissos
+        .filter((item) => {
+          const [dia, mes, ano] = item.data.split('/');
+          return (
+            parseInt(mes, 10) - 1 === currentMonth &&
+            parseInt(ano, 10) === currentYear
+          );
+        })
+        .map((item) => parseInt(item.data.split('/')[0], 10))
+    );
 
     return (
       <View>
@@ -130,6 +158,7 @@ const AgendaScreen = () => {
             const date = new Date(currentYear, currentMonth, dia);
             const isToday = date.toDateString() === today.toDateString();
             const isSelected = date.toDateString() === selectedDate.toDateString();
+            const temCompromisso = diasComCompromissos.has(dia);
 
             return (
               <TouchableOpacity
@@ -148,25 +177,28 @@ const AgendaScreen = () => {
                 ]}>
                   {dia}
                 </Text>
+                {temCompromisso && (
+                  <View
+                    style={{
+                      width: 7,
+                      height: 7,
+                      borderRadius: 4,
+                      backgroundColor: '#FF9800',
+                      alignSelf: 'center',
+                      marginTop: 2,
+                    }}
+                  />
+                )}
               </TouchableOpacity>
             );
           })}
         </View>
+        <Text style={styles.sectionSubtitle}>
+          {diasDaSemana[selectedDate.getDay()]}, {selectedDate.getDate()} de {mesAtual} de {anoAtual}
+        </Text>
+        {renderCompromissosDia()}
       </View>
     );
-  };
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'Semana':
-        return renderSemana();
-      case 'Dia':
-        return renderDia();
-      case 'Mês':
-        return renderMes();
-      default:
-        return null;
-    }
   };
 
   return (
@@ -190,15 +222,7 @@ const AgendaScreen = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.tabBar}>
-          {['Semana', 'Dia', 'Mês'].map((tab) => (
-            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab as any)}>
-              <Text style={[styles.tabItem, activeTab === tab && styles.tabActive]}>{tab}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {renderTabContent()}
+        {renderMes()}
       </ScrollView>
     </SafeAreaView>
   );
