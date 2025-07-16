@@ -17,15 +17,40 @@ const AgendaScreen = () => {
   const [activeTab, setActiveTab] = useState<'Semana' | 'Dia' | 'Mês'>('Semana');
   const [selectedDate, setSelectedDate] = useState(today);
 
-  const diaSemanaIndex = today.getDay();
+  // Novo estado para mês e ano
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+
   const diaHoje = today.getDate();
-  const mesAtual = today.toLocaleString('default', { month: 'long' });
-  const anoAtual = today.getFullYear();
+  const mesAtual = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
+  const anoAtual = currentYear;
   const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+  // Funções para alterar mês
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+    // Atualiza o dia selecionado para o primeiro dia do novo mês
+    setSelectedDate(new Date(currentYear, currentMonth === 0 ? 11 : currentMonth - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+    // Atualiza o dia selecionado para o primeiro dia do novo mês
+    setSelectedDate(new Date(currentYear, currentMonth === 11 ? 0 : currentMonth + 1, 1));
+  };
+
   const renderSemana = () => {
-    // Dias do mês atual
-    const diasNoMes = new Date(anoAtual, today.getMonth() + 1, 0).getDate();
+    const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
     const dias = Array.from({ length: diasNoMes }, (_, i) => i + 1);
 
     return (
@@ -33,10 +58,10 @@ const AgendaScreen = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.weekRow} // <-- troque style por contentContainerStyle
+          contentContainerStyle={styles.weekRow}
         >
-          {dias.map((dia, i) => {
-            const date = new Date(anoAtual, today.getMonth(), dia);
+          {dias.map((dia) => {
+            const date = new Date(currentYear, currentMonth, dia);
             const isToday = date.toDateString() === today.toDateString();
             const isSelected = date.toDateString() === selectedDate.toDateString();
 
@@ -92,7 +117,7 @@ const AgendaScreen = () => {
   };
 
   const renderMes = () => {
-    const diasNoMes = new Date(anoAtual, today.getMonth() + 1, 0).getDate();
+    const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
     const dias = Array.from({ length: diasNoMes }, (_, i) => i + 1);
 
     return (
@@ -102,8 +127,8 @@ const AgendaScreen = () => {
         </Text>
         <View style={styles.calendarGrid}>
           {dias.map((dia) => {
-            const date = new Date(anoAtual, today.getMonth(), dia);
-            const isToday = dia === diaHoje;
+            const date = new Date(currentYear, currentMonth, dia);
+            const isToday = date.toDateString() === today.toDateString();
             const isSelected = date.toDateString() === selectedDate.toDateString();
 
             return (
@@ -118,7 +143,7 @@ const AgendaScreen = () => {
               >
                 <Text style={[
                   styles.calendarDayText,
-                  isToday && { color: '#fff' }, // Cor branca para o dia atual
+                  isToday && { color: '#fff' },
                   isSelected && styles.calendarDayTextActive,
                 ]}>
                   {dia}
@@ -155,10 +180,10 @@ const AgendaScreen = () => {
           {mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1)} {anoAtual}
         </Text>
         <View style={styles.headerControls}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handlePrevMonth}>
             <Ionicons name="chevron-back" size={24} color="#2A6B7C" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleNextMonth}>
             <Ionicons name="chevron-forward" size={24} color="#2A6B7C" />
           </TouchableOpacity>
         </View>
