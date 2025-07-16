@@ -114,6 +114,13 @@ const styles = StyleSheet.create({
   currentDay: {
     backgroundColor: '#2A6B7C',
   },
+  calendarDaySelected: {
+  backgroundColor: '#2A6B7C',
+  borderRadius: 20,
+  },
+  calendarDayTextActive: {
+    color: '#fff',
+  },
   calendarDayText: {
     color: '#2A6B7C',
     fontWeight: '600',
