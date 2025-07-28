@@ -148,6 +148,10 @@ const AgendaScreen = () => {
         .map((item) => parseInt(item.data.split('/')[0], 10))
     );
 
+    // Verifica se o mês/ano atual é o mesmo do sistema
+    const isMesAtual =
+      currentMonth === today.getMonth() && currentYear === today.getFullYear();
+
     return (
       <View>
         <Text style={styles.sectionSubtitle}>
@@ -156,9 +160,9 @@ const AgendaScreen = () => {
         <View style={styles.calendarGrid}>
           {dias.map((dia) => {
             const date = new Date(currentYear, currentMonth, dia);
-            const isToday = date.toDateString() === today.toDateString();
+            const isToday = isMesAtual && date.toDateString() === today.toDateString();
+            // Só marca como selecionado se o usuário clicar
             const isSelected = date.toDateString() === selectedDate.toDateString();
-            const temCompromisso = diasComCompromissos.has(dia);
 
             return (
               <TouchableOpacity
@@ -166,18 +170,21 @@ const AgendaScreen = () => {
                 onPress={() => setSelectedDate(date)}
                 style={[
                   styles.calendarDay,
+                  // Só mostra o círculo azul se for o dia selecionado (exceto o dia atual no mês atual)
+                  isSelected && (!isMesAtual || !isToday) && styles.calendarDaySelected,
+                  // Mostra o círculo azul do dia atual apenas no mês atual
                   isToday && styles.currentDay,
-                  isSelected && styles.calendarDaySelected,
                 ]}
               >
                 <Text style={[
                   styles.calendarDayText,
-                  isToday && { color: '#fff' },
-                  isSelected && styles.calendarDayTextActive,
+                  isToday && styles.calendarDayTextActive,
+                  isSelected && (!isMesAtual || !isToday) && styles.calendarDayTextActive,
                 ]}>
                   {dia}
                 </Text>
-                {temCompromisso && (
+                {/* Ponto laranja para dias com compromisso */}
+                {diasComCompromissos.has(dia) && (
                   <View
                     style={{
                       width: 7,

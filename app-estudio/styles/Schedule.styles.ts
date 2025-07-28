@@ -112,10 +112,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   currentDay: {
-    backgroundColor: '#2A6B7C',
+    backgroundColor: '#47bbd8ff',
   },
   calendarDaySelected: {
-  backgroundColor: '#2A6B7C',
+  backgroundColor: '#0181a1ff',
   borderRadius: 20,
   },
   calendarDayTextActive: {
