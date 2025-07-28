@@ -16,6 +16,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { salvarItem, carregarItem } from '../storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import ClienteModal from '../screens/ClienteModal'; // Corrija o import
 
 type RootStackParamList = {
   Home: undefined;
@@ -47,10 +48,12 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
   const [clienteModalVisible, setClienteModalVisible] = useState(false);
   const [novoClienteModalVisible, setNovoClienteModalVisible] = useState(false);
 
-  // Campos para novo cliente
-  const [novoNome, setNovoNome] = useState('');
-  const [novoNumero, setNovoNumero] = useState('');
-  const [novoObs, setNovoObs] = useState('');
+  // Carregar clientes ao abrir tela
+  React.useEffect(() => {
+    carregarItem<Cliente[]>('clientes').then((dados) => {
+      if (dados) setClientes(dados);
+    });
+  }, []);
 
   const showDatePicker = () => setDatePickerVisible(true);
   const showTimePicker = () => setTimePickerVisible(true);
@@ -69,35 +72,6 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
       setHorario(currentTime);
     }
     setTimePickerVisible(false);
-  };
-
-  // Carregar clientes ao abrir tela
-  React.useEffect(() => {
-    carregarItem<Cliente[]>('clientes').then((dados) => {
-      if (dados) setClientes(dados);
-    });
-  }, []);
-
-  // Função para adicionar novo cliente
-  const handleAddNovoCliente = async () => {
-    if (!novoNome.trim() || !novoNumero.trim()) {
-      Alert.alert('Erro', 'Nome e número são obrigatórios.');
-      return;
-    }
-    const novoCliente: Cliente = {
-      id: Date.now().toString(),
-      nome: novoNome,
-      numero: novoNumero,
-      observacao: novoObs,
-    };
-    const novosClientes = [...clientes, novoCliente];
-    setClientes(novosClientes);
-    await salvarItem('clientes', novosClientes);
-    setClienteSelecionado(novoCliente);
-    setNovoClienteModalVisible(false);
-    setNovoNome('');
-    setNovoNumero('');
-    setNovoObs('');
   };
 
   const handleAdd = async () => {
@@ -193,40 +167,18 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
         </Modal>
 
         {/* Modal para adicionar novo cliente */}
-        <Modal visible={novoClienteModalVisible} animationType="slide" transparent>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', padding: 20 }}>
-            <View style={{ backgroundColor: '#FFF', borderRadius: 10, padding: 20 }}>
-              <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 10 }}>Novo Cliente</Text>
-              <TextInput
-                placeholder="Nome"
-                style={styles.input}
-                value={novoNome}
-                onChangeText={setNovoNome}
-              />
-              <TextInput
-                placeholder="Número"
-                style={styles.input}
-                value={novoNumero}
-                onChangeText={setNovoNumero}
-                keyboardType="phone-pad"
-              />
-              <TextInput
-                placeholder="Observação"
-                style={styles.input}
-                value={novoObs}
-                onChangeText={setNovoObs}
-              />
-              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10 }}>
-                <TouchableOpacity onPress={() => setNovoClienteModalVisible(false)}>
-                  <Text style={{ color: '#888', marginRight: 15 }}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleAddNovoCliente}>
-                  <Text style={{ color: '#2A6B7C', fontWeight: 'bold' }}>Salvar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
+        <ClienteModal
+          visible={novoClienteModalVisible}
+          onClose={() => setNovoClienteModalVisible(false)}
+          onSave={async (novoCliente) => {
+            const novosClientes = [...clientes, novoCliente];
+            setClientes(novosClientes);
+            await salvarItem('clientes', novosClientes);
+            setClienteSelecionado(novoCliente);
+            setNovoClienteModalVisible(false);
+          }}
+          styles={styles}
+        />
 
         <TouchableOpacity style={styles.input} onPress={showDatePicker}>
           <Text style={styles.inputText}>

@@ -6,12 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
-  TextInput,
   FlatList,
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { salvarItem, carregarItem } from '../storage'; 
+import ClienteModal from './ClienteModal';
 
 type Cliente = {
   id: string;
@@ -23,11 +23,8 @@ type Cliente = {
 const ClientesScreen = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [nome, setNome] = useState('');
-  const [numero, setNumero] = useState('');
-  const [observacao, setObservacao] = useState('');
 
-    // Carregar clientes ao iniciar
+  // Carregar clientes ao iniciar
   useEffect(() => {
     carregarItem<Cliente[]>('clientes').then((dados) => {
       if (dados) setClientes(dados);
@@ -39,23 +36,8 @@ const ClientesScreen = () => {
     salvarItem('clientes', clientes);
   }, [clientes]);
 
-  const adicionarCliente = () => {
-    if (!nome.trim() || !numero.trim()) {
-      Alert.alert('Erro', 'Nome e número são obrigatórios.');
-      return;
-    }
-
-    const novoCliente = {
-      id: Date.now().toString(),
-      nome,
-      numero,
-      observacao,
-    };
-
+  const adicionarCliente = (novoCliente: Cliente) => {
     setClientes((prev) => [...prev, novoCliente]);
-    setNome('');
-    setNumero('');
-    setObservacao('');
     setModalVisible(false);
   };
 
@@ -106,40 +88,12 @@ const ClientesScreen = () => {
       </TouchableOpacity>
 
       {/* Modal para adicionar cliente */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Adicionar Cliente</Text>
-            <TextInput
-              placeholder="Nome"
-              style={styles.input}
-              value={nome}
-              onChangeText={setNome}
-            />
-            <TextInput
-              placeholder="Número"
-              style={styles.input}
-              value={numero}
-              onChangeText={setNumero}
-              keyboardType="phone-pad"
-            />
-            <TextInput
-              placeholder="Observação"
-              style={styles.input}
-              value={observacao}
-              onChangeText={setObservacao}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
-                <Text style={styles.buttonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={adicionarCliente} style={styles.saveButton}>
-                <Text style={styles.buttonText}>Salvar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ClienteModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSave={adicionarCliente}
+        styles={styles}
+      />
     </View>
   );
 };
