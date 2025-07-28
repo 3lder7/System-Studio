@@ -10,6 +10,8 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
+  Modal,
+  FlatList,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { salvarItem, carregarItem } from '../storage';
@@ -22,9 +24,14 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddAppointment'>;
 
-const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
-  // Removido: addAppointment não é passado por params e não é necessário aqui.
+type Cliente = {
+  id: string;
+  nome: string;
+  numero: string;
+  observacao: string;
+};
 
+const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
   const [dataConsulta, setDataConsulta] = useState(new Date());
   const [horario, setHorario] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
@@ -34,6 +41,16 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
   const [servico, setServico] = useState('');
   const [valor, setValor] = useState('');
   const [status, setStatus] = useState('Pendente');
+
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null);
+  const [clienteModalVisible, setClienteModalVisible] = useState(false);
+  const [novoClienteModalVisible, setNovoClienteModalVisible] = useState(false);
+
+  // Campos para novo cliente
+  const [novoNome, setNovoNome] = useState('');
+  const [novoNumero, setNovoNumero] = useState('');
+  const [novoObs, setNovoObs] = useState('');
 
   const showDatePicker = () => setDatePickerVisible(true);
   const showTimePicker = () => setTimePickerVisible(true);
@@ -54,37 +71,66 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
     setTimePickerVisible(false);
   };
 
-const handleAdd = async () => {
-  if (!cliente || !servico || !valor) {
-    Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-    return;
-  }
+  // Carregar clientes ao abrir tela
+  React.useEffect(() => {
+    carregarItem<Cliente[]>('clientes').then((dados) => {
+      if (dados) setClientes(dados);
+    });
+  }, []);
 
-  const formattedDate = dataConsulta.toLocaleDateString('pt-BR');
-  const formattedTime = horario.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  const newAppointment = {
-    id: Date.now(),
-    data: formattedDate,
-    horario: formattedTime,
-    cliente,
-    servico,
-    valor,
-    status,
+  // Função para adicionar novo cliente
+  const handleAddNovoCliente = async () => {
+    if (!novoNome.trim() || !novoNumero.trim()) {
+      Alert.alert('Erro', 'Nome e número são obrigatórios.');
+      return;
+    }
+    const novoCliente: Cliente = {
+      id: Date.now().toString(),
+      nome: novoNome,
+      numero: novoNumero,
+      observacao: novoObs,
+    };
+    const novosClientes = [...clientes, novoCliente];
+    setClientes(novosClientes);
+    await salvarItem('clientes', novosClientes);
+    setClienteSelecionado(novoCliente);
+    setNovoClienteModalVisible(false);
+    setNovoNome('');
+    setNovoNumero('');
+    setNovoObs('');
   };
 
-  // Carrega compromissos existentes
-  const compromissos = (await carregarItem<any[]>('compromissos')) || [];
-  // Adiciona o novo
-  const novosCompromissos = [...compromissos, newAppointment];
-  // Salva no AsyncStorage
-  await salvarItem('compromissos', novosCompromissos);
+  const handleAdd = async () => {
+    if (!clienteSelecionado || !servico || !valor) {
+      Alert.alert('Erro', 'Por favor, selecione um cliente e preencha todos os campos.');
+      return;
+    }
 
-  navigation.goBack();
-};
+    const formattedDate = dataConsulta.toLocaleDateString('pt-BR');
+    const formattedTime = horario.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const newAppointment = {
+      id: Date.now(),
+      data: formattedDate,
+      horario: formattedTime,
+      cliente: clienteSelecionado.nome,
+      servico,
+      valor,
+      status,
+    };
+
+    // Carrega compromissos existentes
+    const compromissos = (await carregarItem<any[]>('compromissos')) || [];
+    // Adiciona o novo
+    const novosCompromissos = [...compromissos, newAppointment];
+    // Salva no AsyncStorage
+    await salvarItem('compromissos', novosCompromissos);
+
+    navigation.goBack();
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -94,6 +140,93 @@ const handleAdd = async () => {
       />
       <View style={styles.container}>
         <Text style={styles.title}>Adicionar Compromisso</Text>
+
+        {/* Seleção de Cliente */}
+        <TouchableOpacity
+          style={styles.input}
+          onPress={() => setClienteModalVisible(true)}
+        >
+          <Text style={styles.inputText}>
+            {clienteSelecionado ? clienteSelecionado.nome : 'Selecione um cliente'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Modal de seleção de cliente */}
+        <Modal visible={clienteModalVisible} animationType="slide" transparent>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', padding: 20 }}>
+            <View style={{ backgroundColor: '#FFF', borderRadius: 10, padding: 20, maxHeight: 400 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 10 }}>Selecione um cliente</Text>
+              <FlatList
+                data={clientes}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: '#eee' }}
+                    onPress={() => {
+                      setClienteSelecionado(item);
+                      setClienteModalVisible(false);
+                    }}
+                  >
+                    <Text style={{ fontSize: 16 }}>{item.nome}</Text>
+                    <Text style={{ color: '#888', fontSize: 13 }}>{item.numero}</Text>
+                  </TouchableOpacity>
+                )}
+                ListEmptyComponent={<Text style={{ color: '#999', textAlign: 'center', margin: 20 }}>Nenhum cliente cadastrado.</Text>}
+              />
+              <TouchableOpacity
+                style={{ marginTop: 15, alignSelf: 'flex-end' }}
+                onPress={() => {
+                  setClienteModalVisible(false);
+                  setNovoClienteModalVisible(true);
+                }}
+              >
+                <Text style={{ color: '#2A6B7C', fontWeight: 'bold' }}>+ Adicionar novo cliente</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ marginTop: 10, alignSelf: 'flex-end' }}
+                onPress={() => setClienteModalVisible(false)}
+              >
+                <Text style={{ color: '#888' }}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Modal para adicionar novo cliente */}
+        <Modal visible={novoClienteModalVisible} animationType="slide" transparent>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', padding: 20 }}>
+            <View style={{ backgroundColor: '#FFF', borderRadius: 10, padding: 20 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 10 }}>Novo Cliente</Text>
+              <TextInput
+                placeholder="Nome"
+                style={styles.input}
+                value={novoNome}
+                onChangeText={setNovoNome}
+              />
+              <TextInput
+                placeholder="Número"
+                style={styles.input}
+                value={novoNumero}
+                onChangeText={setNovoNumero}
+                keyboardType="phone-pad"
+              />
+              <TextInput
+                placeholder="Observação"
+                style={styles.input}
+                value={novoObs}
+                onChangeText={setNovoObs}
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 10 }}>
+                <TouchableOpacity onPress={() => setNovoClienteModalVisible(false)}>
+                  <Text style={{ color: '#888', marginRight: 15 }}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleAddNovoCliente}>
+                  <Text style={{ color: '#2A6B7C', fontWeight: 'bold' }}>Salvar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
         <TouchableOpacity style={styles.input} onPress={showDatePicker}>
           <Text style={styles.inputText}>
@@ -128,14 +261,6 @@ const handleAdd = async () => {
             onChange={handleTimeChange}
           />
         )}
-
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do Cliente"
-          placeholderTextColor="#999"
-          value={cliente}
-          onChangeText={setCliente}
-        />
 
         <TextInput
           style={styles.input}
