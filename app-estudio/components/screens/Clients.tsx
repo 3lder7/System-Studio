@@ -23,6 +23,7 @@ type Cliente = {
 const ClientesScreen = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [clienteEditando, setClienteEditando] = useState<Cliente | null>(null);
 
   // Carregar clientes ao iniciar
   useEffect(() => {
@@ -36,9 +37,26 @@ const ClientesScreen = () => {
     salvarItem('clientes', clientes);
   }, [clientes]);
 
-  const adicionarCliente = (novoCliente: Cliente) => {
-    setClientes((prev) => [...prev, novoCliente]);
+  const editarCliente = (cliente: Cliente) => {
+    setClienteEditando(cliente);
+    setModalVisible(true);
+  };
+
+  const salvarClienteEditado = (cliente: Cliente) => {
+    setClientes((prev) =>
+      prev.map((c) => (c.id === cliente.id ? cliente : c))
+    );
+    setClienteEditando(null);
     setModalVisible(false);
+  };
+
+  const adicionarCliente = (novoCliente: Cliente) => {
+    if (clienteEditando) {
+      salvarClienteEditado(novoCliente);
+    } else {
+      setClientes((prev) => [...prev, novoCliente]);
+      setModalVisible(false);
+    }
   };
 
   const removerCliente = (id: string) => {
@@ -61,9 +79,14 @@ const ClientesScreen = () => {
     <View style={styles.clienteCard}>
       <View style={styles.clienteHeader}>
         <Text style={styles.clienteNome}>{item.nome}</Text>
-        <TouchableOpacity onPress={() => removerCliente(item.id)}>
-          <Ionicons name="trash" size={20} color="#FF5C5C" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity onPress={() => editarCliente(item)}>
+            <Ionicons name="create" size={20} color="#2A6B7C" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => removerCliente(item.id)}>
+            <Ionicons name="trash" size={20} color="#FF5C5C" />
+          </TouchableOpacity>
+        </View>
       </View>
       <Text style={styles.clienteInfo}>📞 {item.numero}</Text>
       <Text style={styles.clienteInfo}>📝 {item.observacao}</Text>
@@ -90,9 +113,13 @@ const ClientesScreen = () => {
       {/* Modal para adicionar cliente */}
       <ClienteModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={() => {
+          setModalVisible(false);
+          setClienteEditando(null);
+        }}
         onSave={adicionarCliente}
         styles={styles}
+        cliente={clienteEditando}
       />
     </View>
   );

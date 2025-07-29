@@ -13,17 +13,24 @@ type Props = {
   onClose: () => void;
   onSave: (cliente: Cliente) => void;
   styles: any;
+  cliente?: Cliente | null;
 };
 
-const ClienteModal: React.FC<Props> = ({ visible, onClose, onSave, styles }) => {
-  const [nome, setNome] = useState('');
-  const [numero, setNumero] = useState('');
-  const [observacao, setObservacao] = useState('');
+const ClienteModal: React.FC<Props> = ({ visible, onClose, onSave, styles, cliente }) => {
+  const [nome, setNome] = useState(cliente?.nome || '');
+  const [numero, setNumero] = useState(cliente?.numero || '');
+  const [observacao, setObservacao] = useState(cliente?.observacao || '');
+
+  React.useEffect(() => {
+    setNome(cliente?.nome || '');
+    setNumero(cliente?.numero || '');
+    setObservacao(cliente?.observacao || '');
+  }, [cliente, visible]);
 
   const handleSave = () => {
     if (!nome.trim() || !numero.trim()) return;
     onSave({
-      id: Date.now().toString(),
+      id: cliente?.id || Date.now().toString(),
       nome,
       numero,
       observacao,
