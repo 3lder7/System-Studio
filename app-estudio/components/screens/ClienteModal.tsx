@@ -40,12 +40,14 @@ const ClienteModal: React.FC<Props> = ({ visible, onClose, onSave, styles }) => 
           <Text style={styles.modalTitle}>Adicionar Cliente</Text>
           <TextInput
             placeholder="Nome"
+            placeholderTextColor="#888"
             style={styles.input}
             value={nome}
             onChangeText={setNome}
           />
           <TextInput
             placeholder="Número"
+            placeholderTextColor="#888"
             style={styles.input}
             value={numero}
             onChangeText={setNumero}
@@ -53,6 +55,7 @@ const ClienteModal: React.FC<Props> = ({ visible, onClose, onSave, styles }) => 
           />
           <TextInput
             placeholder="Observação"
+            placeholderTextColor="#888"
             style={styles.input}
             value={observacao}
             onChangeText={setObservacao}
