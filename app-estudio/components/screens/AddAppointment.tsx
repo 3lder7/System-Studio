@@ -54,6 +54,7 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
     carregarItem<Cliente[]>('clientes').then((dados) => {
       if (dados) setClientes(dados);
     });
+    navigation.setOptions({ title: 'Novo Compromisso' });
   }, []);
 
   const showDatePicker = () => setDatePickerVisible(true);
