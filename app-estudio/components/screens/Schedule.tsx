@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { carregarItem, salvarItem } from '../storage';
+import { useIsFocused } from '@react-navigation/native';
 
 const AgendaScreen = () => {
   const today = new Date();
@@ -19,20 +20,29 @@ const AgendaScreen = () => {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [compromissos, setCompromissos] = useState<any[]>([]);
+  const isFocused = useIsFocused();
 
   const mesAtual = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
   const anoAtual = currentYear;
 
   useEffect(() => {
-    carregarItem<any[]>('compromissos').then((dados) => {
-      if (dados) setCompromissos(dados);
-    });
-  }, []);
+    if (isFocused) {
+      carregarItem<any[]>('compromissos').then((dados) => {
+        if (dados) setCompromissos(dados);
+      });
+    }
+  }, [isFocused]);
 
   const updateStatus = (id: number, novoStatus: string) => {
     const novos = compromissos.map((item) =>
       item.id === id ? { ...item, status: novoStatus } : item
     );
+    setCompromissos(novos);
+    salvarItem('compromissos', novos);
+  };
+
+  const deleteCommitment = (id: number) => {
+    const novos = compromissos.filter((item) => item.id !== id);
     setCompromissos(novos);
     salvarItem('compromissos', novos);
   };
@@ -80,6 +90,7 @@ const AgendaScreen = () => {
                   { text: 'Pago', onPress: () => updateStatus(compromisso.id, 'Pago') },
                   { text: 'Cancelado', onPress: () => updateStatus(compromisso.id, 'Cancelado') },
                   { text: 'Pendente', onPress: () => updateStatus(compromisso.id, 'Pendente') },
+                  { text: 'Deletar', style: 'destructive', onPress: () => deleteCommitment(compromisso.id) },
                   { text: 'Fechar', style: 'cancel' },
                 ]
               )
