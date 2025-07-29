@@ -16,7 +16,8 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { salvarItem, carregarItem } from '../storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import ClienteModal from '../screens/ClienteModal'; // Corrija o import
+import ClienteModal from '../screens/ClienteModal'; 
+import clienteModalStyles from '../../styles/Clients.styles';
 
 type RootStackParamList = {
   Home: undefined;
@@ -177,7 +178,7 @@ const AddCompromissos: React.FC<Props> = ({ route, navigation }) => {
             setClienteSelecionado(novoCliente);
             setNovoClienteModalVisible(false);
           }}
-          styles={styles}
+          styles={clienteModalStyles}
         />
 
         <TouchableOpacity style={styles.input} onPress={showDatePicker}>
