@@ -90,11 +90,16 @@ const TelaInicial = () => {
           },
           {
             text: 'Cancelado',
-            onPress: handleCancel, //Chama a função handleCancel 
+            onPress: () => updateStatus('Cancelado'),
           },
           {
             text: 'Pendente',
             onPress: () => updateStatus('Pendente'),
+          },
+          {
+            text: 'Deletar',
+            style: 'destructive',
+            onPress: () => deleteCommitment(),
           },
           {
             text: 'Fechar',
