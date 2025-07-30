@@ -20,9 +20,7 @@ const PagamentosScreen = () => {
       return pagamentos.filter((p) => p.data === hoje.toLocaleDateString('pt-BR'));
     }
     if (activeTab === 'semanal') {
-      // Filtrar por semana atual
-      // ...implementar lógica...
-      return pagamentos; // Exemplo simplificado
+      return pagamentos; 
     }
     if (activeTab === 'mensal') {
       return pagamentos.filter(
