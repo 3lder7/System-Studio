@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../styles/HomeScreen.styles';
 import { salvarItem, carregarItem } from '../storage'; 
+import { Ionicons } from '@expo/vector-icons';
 
 import {
   View,
@@ -214,12 +215,10 @@ const TelaInicial = () => {
       </ScrollView>
 
       {/* Botão flutuante de adicionar */}
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => navigation.navigate('AddAppointment')}
+      <TouchableOpacity style={styles.floatingButton} onPress={() => navigation.navigate('AddAppointment')}
         activeOpacity={0.8}
       >
-        <Text style={styles.floatingButtonText}>+</Text>
+        <Ionicons name="add" size={25} color="#FFF" />
       </TouchableOpacity>
     </SafeAreaView>
   );

@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   floatingButtonText: {
-    fontSize: 30,
+    fontWeight: '300',
     color: '#FFFFFF',
   },
 });
