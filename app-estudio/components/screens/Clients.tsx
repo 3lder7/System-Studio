@@ -3,9 +3,7 @@ import styles from '../../styles/Clients.styles';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
-  Modal,
   FlatList,
   Alert,
 } from 'react-native';
