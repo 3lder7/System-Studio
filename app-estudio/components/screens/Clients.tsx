@@ -6,6 +6,10 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  SafeAreaView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { salvarItem, carregarItem } from '../storage'; 
@@ -18,10 +22,39 @@ type Cliente = {
   observacao: string;
 };
 
+type ClienteItemProps = {
+  item: Cliente;
+  onEdit: (cliente: Cliente) => void;
+  onRemove: (id: string) => void;
+};
+
+const ClienteItem = React.memo(({ item, onEdit, onRemove }: ClienteItemProps) => (
+  <View style={styles.clienteCard}>
+    <View style={styles.clienteHeader}>
+      <Text style={styles.clienteNome}>{item.nome}</Text>
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <TouchableOpacity onPress={() => onEdit(item)}>
+          <Ionicons name="create" size={20} color="#2A6B7C" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onRemove(item.id)}>
+          <Ionicons name="trash" size={20} color="#FF5C5C" />
+        </TouchableOpacity>
+      </View>
+    </View>
+    <Text style={styles.clienteInfo}>📞 {item.numero}</Text>
+    <Text style={styles.clienteInfo}>📝 {item.observacao}</Text>
+  </View>
+));
+
 const ClientesScreen = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [clienteEditando, setClienteEditando] = useState<Cliente | null>(null);
+  const [busca, setBusca] = useState('');
+  const clientesFiltrados = clientes.filter(c =>
+    c.nome.toLowerCase().includes(busca.toLowerCase()) ||
+    c.numero.includes(busca)
+  );
 
   // Carregar clientes ao iniciar
   useEffect(() => {
@@ -73,53 +106,44 @@ const ClientesScreen = () => {
     );
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.clienteCard}>
-      <View style={styles.clienteHeader}>
-        <Text style={styles.clienteNome}>{item.nome}</Text>
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <TouchableOpacity onPress={() => editarCliente(item)}>
-            <Ionicons name="create" size={20} color="#2A6B7C" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => removerCliente(item.id)}>
-            <Ionicons name="trash" size={20} color="#FF5C5C" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Text style={styles.clienteInfo}>📞 {item.numero}</Text>
-      <Text style={styles.clienteInfo}>📝 {item.observacao}</Text>
-    </View>
-  );
-
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={clientes}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>Nenhum cliente adicionado ainda.</Text>
-        }
-        contentContainerStyle={{ padding: 20 }}
-      />
-
-      {/* Botão flutuante */}
-      <TouchableOpacity style={styles.floatingButton} onPress={() => setModalVisible(true)}>
-        <Ionicons name="add" size={25} color="#FFF" />
-      </TouchableOpacity>
-
-      {/* Modal para adicionar cliente */}
-      <ClienteModal
-        visible={modalVisible}
-        onClose={() => {
-          setModalVisible(false);
-          setClienteEditando(null);
-        }}
-        onSave={adicionarCliente}
-        styles={styles}
-        cliente={clienteEditando}
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#2A6B7C" style={styles.searchIcon} />
+          <TextInput
+            style={[styles.input, { marginBottom: 10, paddingLeft: 40 }]} // Adiciona padding para a lupa
+            placeholder="Buscar cliente..."
+            value={busca}
+            onChangeText={setBusca}
+          />
+        </View>
+        <FlatList
+          data={clientesFiltrados}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ClienteItem item={item} onEdit={editarCliente} onRemove={removerCliente} />
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>Nenhum cliente encontrado.</Text>
+          }
+          contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+        />
+        <TouchableOpacity style={styles.floatingButton} onPress={() => setModalVisible(true)}>
+          <Ionicons name="add" size={25} color="#FFF" />
+        </TouchableOpacity>
+        <ClienteModal
+          visible={modalVisible}
+          onClose={() => {
+            setModalVisible(false);
+            setClienteEditando(null);
+          }}
+          onSave={adicionarCliente}
+          styles={styles}
+          cliente={clienteEditando}
+        />
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

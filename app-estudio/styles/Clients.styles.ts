@@ -97,6 +97,18 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: '300',
   },
+  searchContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: '#F0F0F0', 
+  borderRadius: 8,
+  padding: 5,
+  elevation: 2, 
+},
+searchIcon: {
+  position: 'absolute',
+  left: 15,
+},
 });
 
 export default styles;
